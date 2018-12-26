@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="tab_checked">#38adff</color>
+    <color name="tab_unchecked">#757575</color>
+
+    <color name="colorAppMian">#38adff</color>
+    <color name="colorAppMianDark">#0b88e0</color>
+
+    <color name="colorHomeBottomLine">#d6d6d6</color>
+
+    <color name="color_layout_background">#f2f2f2</color>
+
+    <color name="white">#ffffff</color>
+
+    <color name="color_listview_line">#e9e9e9</color>
+    <color name="color_listview_text">#353535</color>
+    <color name="rad">#ff2600</color>
+    <color name="black">#99000000</color>
+</resources>

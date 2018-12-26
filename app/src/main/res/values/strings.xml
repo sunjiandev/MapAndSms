@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">凯讯</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="storage_description_title">你能允许存储权限吗?</string>
+    <string name="storage_description_why_we_need_the_permission">你好,地图缓存需要存储权限。你能允许吗?</string>
+    <string name="location_description_title">你能允许定位权限吗?</string>
+    <string name="location_description_why_we_need_the_permission">你好,定位功能需要获取位置权限。你能允许吗?</string>
+
+
+    <string name="home_bottom_text_message">消息</string>
+    <string name="home_bottom_text_phone">通话</string>
+    <string name="home_bottom_text_contact">通讯录</string>
+    <string name="home_bottom_text_mine">我的</string>
+    <string name="net_err">网络故障，请检查网络</string>
+    <string name="start_upload_location">开启位置上报</string>
+    <string name="upload_location_time_tips">上报位置的时间间隔,默认是2,单位min</string>
+    <string name="upload_distance_text">设置上报位置的时间间隔</string>
+    <string name="upload_distance_tips">上报位置的距离,默认是50,单位m</string>
+
+    <string-array name="post_distance">
+        <item>20</item>
+        <item>30 </item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+    </string-array>
+    <string-array name="upload_time">
+        <item>2</item>
+        <item>4 </item>
+        <item>6</item>
+        <item>8</item>
+        <item>10</item>
+    </string-array>
+</resources>

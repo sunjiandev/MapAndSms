@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".gps.MapActivity">
+
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:id="@+id/message_layout"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="15dp"
+        android:background="@drawable/icon_background">
+
+        <ImageView
+            android:id="@+id/unread_message_icon"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/icon_unread_shape" />
+
+        <ImageView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:src="@mipmap/message" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/contact"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/message_layout"
+        android:layout_margin="15dp"
+        android:background="@drawable/icon_background"
+        android:padding="8dp"
+        android:src="@mipmap/contact" />
+
+
+</RelativeLayout>
