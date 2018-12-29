@@ -40,6 +40,8 @@ import com.sunkaisens.gisandsms.MainActivity;
 import com.sunkaisens.gisandsms.R;
 import com.sunkaisens.gisandsms.RuntimeRationale;
 import com.sunkaisens.gisandsms.contact.ContactActivity;
+import com.sunkaisens.gisandsms.event.ContactLocation;
+import com.sunkaisens.gisandsms.event.ContactsLocations;
 import com.sunkaisens.gisandsms.event.MessageEvent;
 import com.sunkaisens.gisandsms.event.MessageSMS;
 import com.sunkaisens.gisandsms.sms.ReceiveSmsService;
@@ -57,12 +59,15 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author sun
@@ -123,7 +128,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
      */
     private void getFirstData() {
 
-        SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, GlobalVar.GET_CONTACTS_LOCATION);
+//        SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, GlobalVar.GET_CONTACTS_LOCATION);
 
     }
 
@@ -210,18 +215,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
     }
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        List<MessageSMS> smsList = DataSupport.where("isread = ?", "0").find(MessageSMS.class);
-        if (smsList.size() == 0) {
-            unreadMessageIcon.setVisibility(View.GONE);
-        } else {
-            unreadMessageIcon.setVisibility(View.VISIBLE);
-        }
-    }
-
-
     /**
      * 下载地图
      */
@@ -229,7 +222,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
 
         OfflineMapManager manager = new OfflineMapManager(this, this);
         OfflineMapCity nanjing = manager.getItemByCityCode("nanjing");
-        Log.d("sjy","nanjing code:"+nanjing);
+        Log.d("sjy", "nanjing code:" + nanjing);
         try {
             manager.downloadByCityCode("000");
             manager.downloadByCityCode("010");
@@ -295,14 +288,15 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
 //                intent.setData(Uri.parse("smsto:" + "115501129866"));
 //                intent.setType("vnd.android-dir/mms-sms");
 //                startActivity(intent);
-                Intent chatIntent = new Intent(this,MainActivity.class);
-                chatIntent.putExtra(GlobalVar.INTENT_DATA,0);
+                Intent chatIntent = new Intent(this, MainActivity.class);
+                chatIntent.putExtra(GlobalVar.INTENT_DATA, 0);
                 startActivity(chatIntent);
+                unreadMessageIcon.setVisibility(View.GONE);
                 break;
             //点击联系人
             case R.id.contact:
                 Intent contactIntent = new Intent(this, MainActivity.class);
-                contactIntent.putExtra(GlobalVar.INTENT_DATA,1);
+                contactIntent.putExtra(GlobalVar.INTENT_DATA, 1);
                 startActivity(contactIntent);
 
                 break;
@@ -322,6 +316,49 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         //显示未读消息提示
         unreadMessageIcon.setVisibility(View.VISIBLE);
 
+    }
+
+    /**
+     * 多个用户的位置推送
+     *
+     * @param locations 位置数据
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onReceiveLocations(ContactsLocations locations) {
+        Log.d("sjy", "receive locations event :" + message.toString());
+        //显示未读消息提示
+
+        List<ContactsLocations.DataBean> data = locations.getData();
+        for (ContactsLocations.DataBean location : data
+                ) {
+            addMarker(location.getU(), Float.valueOf(location.getLat()), Float.valueOf(location.getLon()));
+        }
+
+    }
+
+    /**
+     * 单个用户的位置推送
+     *
+     * @param location 位置数据
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onReceiveLocation(final ContactLocation location) {
+        Log.d("sjy", "receive locations event :" + message.toString());
+        //显示未读消息提示
+
+//        List<Marker> screenMarkers = aMap.getMapScreenMarkers();
+
+//        Observable.from(screenMarkers).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Marker>() {
+//            @Override
+//            public void call(Marker marker) {
+//
+//                if (marker.getSnippet().equals(location.getU())){
+//                    aMap.re
+//                }
+//
+//            }
+//        })
+        addMarker(location.getU(), Float.valueOf(location.getLat()), Float.valueOf(location.getLon()));
     }
 
     @Override

@@ -181,7 +181,8 @@ public class GpsService extends Service implements Runnable {
                 String strLo = JSON.toJSONString(new SMSLocation(location.getLatitude(), location.getLongitude(), BaseUtils.getInstance().getLocalNumber(this)));
                 info.setB(strLo);
                 info.setM("POST");
-                info.setR(GlobalVar.UPLOAD_LOCATION_HEADER);
+                info.setR(GlobalVar.REQUEST_API);
+                info.setT("1");
                 String strJson = JSON.toJSONString(info);
                 Log.d("sjy", "json str :" + strJson);
                 SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);

@@ -111,14 +111,8 @@ public class GlobalVar {
     public static final int TYPE_UPLOAD_TIME = 454;
 
 
-    /**
-     * 上报位置 header
-     */
-    public static final String UPLOAD_LOCATION_HEADER =  "0100";
-    /**
-     * 首次开机获取好友的当前的位置
-     */
-    public static final String GET_CONTACTS_LOCATION =  "0101";
+
+    public static final String REQUEST_API = "/api/user_coordinateapi";
 
 
     /**
