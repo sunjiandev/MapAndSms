@@ -1,25 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.sunkaisens.gisandsms.contact.ContactActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/toolbar_theme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="联系人" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/contact_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/main_toolbar"
         android:visibility="visible" />
 
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/no_contact_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="gone">
+        android:layout_centerVertical="true">
 
         <ImageView
             android:id="@+id/no_contact_icon"

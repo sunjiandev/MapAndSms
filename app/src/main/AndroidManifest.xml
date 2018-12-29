@@ -28,6 +28,8 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 
     <application
         android:name=".MyApp"
@@ -46,20 +48,25 @@
         </activity>
         <activity android:name=".contact.ContactActivity" />
         <activity android:name=".contact.SettingActivity" />
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".chat.ChatActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="54ef05ef61660e4bce2812554e665c67"></meta-data>
 
-        <receiver android:name=".sms.ReceiverSMSBroadcast">
+        <!--<receiver android:name=".sms.ReceiverSMSBroadcast">-->
 
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter android:priority="1000">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
+            <!--android:enabled="true"-->
+            <!--android:exported="true">-->
+            <!--<intent-filter android:priority="1000">-->
+                <!--<action android:name="android.provider.Telephony.SMS_RECEIVED" />-->
+            <!--</intent-filter>-->
 
-        </receiver>
+        <!--</receiver>-->
         <receiver android:name=".DownloadFinishReceiver">
             <intent-filter>
                 <action android:name="DownloadManager.ACTION_DOWNLOAD_COMPLETE" />
@@ -68,16 +75,8 @@
 
         <service android:name="com.amap.api.location.APSService"></service>
         <service android:name=".gps.GpsService" />
+        <service android:name=".sms.ReceiveSmsService" />
 
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.sunkaisens.gisandsms.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
     </application>
 
 

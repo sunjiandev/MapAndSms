@@ -1,5 +1,7 @@
 package com.sunkaisens.gisandsms;
 
+import com.sunkaisens.gisandsms.event.LastMessageSMS;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,47 @@ public class GlobalVar {
         }
         return globalVar;
     }
+    /**
+     * 发出去的文本消息
+     */
+    public static final int TO_TEXT_MESSAGE = 1;
+    /**
+     * 发出去的图片消息
+     */
+    public static final int TO_IMAGE_MESSAGE = 2;
+    /**
+     * 发出去的即时语音消息
+     */
+    public static final int TO_AUDIO_MESSAGE = 3;
+    /**
+     *
+     */
+    public static final int TO_VIDEO_MESSAGE = 4;
+    /**
+     *
+     */
+    public static final int TO_FILE_MESSAGE = 5;
+
+    /**
+     * 收到的文本消息
+     */
+    public static final int IN_TEXT_MESSAGE = 6;
+    /**
+     * 收到的图片消息
+     */
+    public static final int IN_IMAGE_MESSAGE = 7;
+    /**
+     * 收到的即时语音消息
+     */
+    public static final int IN_AUDIO_MESSAGE = 8;
+    /**
+     * 收到的即时视频消息
+     */
+    public static final int IN_VIDEO_MESSAGE = 9;
+    /**
+     * 收到的文件消息
+     */
+    public static final int IN_FILE_MESSAGE = 10;
 
     /**
      * intent 传递数据的key
@@ -56,6 +99,7 @@ public class GlobalVar {
 
     private List<String> contactLists = new ArrayList<>();
 
+
     /**
      * 地图配置信息的类型,上班位置的距离
      */
@@ -65,6 +109,56 @@ public class GlobalVar {
      * 上报位置的时间间隔
      */
     public static final int TYPE_UPLOAD_TIME = 454;
+
+
+    /**
+     * 上报位置 header
+     */
+    public static final String UPLOAD_LOCATION_HEADER =  "0100";
+    /**
+     * 首次开机获取好友的当前的位置
+     */
+    public static final String GET_CONTACTS_LOCATION =  "0101";
+
+
+    /**
+     * 短信中心的号码
+     */
+
+    public static final String SMS_CENTER_NUMBER = "15320011990";
+    /**
+     * 保存最后一条聊天记录的集合
+     */
+    private List<LastMessageSMS> lastMessageSMSList = new ArrayList<>();
+
+    /**
+     * 获取最后一条记录的数据
+     *
+     * @return 数据
+     */
+    public List<LastMessageSMS> getLastMessageSMSList() {
+        return lastMessageSMSList;
+    }
+
+    /**
+     * 插入一条数据
+     *
+     * @param sms 数据
+     */
+    public void insertLastMessageSms(LastMessageSMS sms) {
+        lastMessageSMSList.add(0, sms);
+    }
+
+    /**
+     * 插入一个集合的数据
+     *
+     * @param smsList 集合
+     */
+    public void insertLastMessageSmsList(List<LastMessageSMS> smsList) {
+        lastMessageSMSList.clear();
+        lastMessageSMSList.addAll(smsList);
+    }
+
 
     /**
      * 获取联系人的集合

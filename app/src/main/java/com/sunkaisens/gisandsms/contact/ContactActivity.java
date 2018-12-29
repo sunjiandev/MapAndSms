@@ -21,9 +21,9 @@ import android.widget.RelativeLayout;
 
 import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.R;
-import com.sunkaisens.gisandsms.utils.ToastUtils;
 import com.sunkaisens.gisandsms.base.BaseActivity;
 import com.sunkaisens.gisandsms.base.BaseRecyclerAdapter;
+import com.sunkaisens.gisandsms.utils.ToastUtils;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ public class ContactActivity extends BaseActivity {
 
         //有联系人数据
         if (contactLists != null && contactLists.size() != 0) {
-            ContactAdapter adapter = new ContactAdapter(this, contactLists, R.layout.contact_layout_item);
+            ContactAdapter adapter = new ContactAdapter(this, contactLists, R.layout.fragment_contact_layout_item);
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -141,6 +141,8 @@ public class ContactActivity extends BaseActivity {
 
                 go(SettingActivity.class);
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -148,7 +150,7 @@ public class ContactActivity extends BaseActivity {
 
     @Override
     protected int initLayout() {
-        return R.layout.activity_main;
+        return R.layout.activity_contact;
     }
 
     private void initContact() {
