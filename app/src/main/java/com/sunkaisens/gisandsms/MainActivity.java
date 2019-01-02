@@ -8,7 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sunkaisens.gisandsms.base.BaseActivity;
-import com.sunkaisens.gisandsms.contact.SettingActivity;
+import com.sunkaisens.gisandsms.tabcontact.ContactFragment;
+import com.sunkaisens.gisandsms.tabcontact.SettingActivity;
 import com.sunkaisens.gisandsms.tabmessage.MessageFragment;
 
 import java.util.ArrayList;

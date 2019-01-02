@@ -1,4 +1,4 @@
-package com.sunkaisens.gisandsms.contact;
+package com.sunkaisens.gisandsms.tabcontact;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -12,16 +12,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.R;
-import com.sunkaisens.gisandsms.base.BaseActivity;
+import com.sunkaisens.gisandsms.base.BaseFragment;
 import com.sunkaisens.gisandsms.base.BaseRecyclerAdapter;
 import com.sunkaisens.gisandsms.utils.ToastUtils;
 
@@ -30,18 +27,16 @@ import java.util.List;
 import butterknife.BindView;
 
 /**
- * @author:sjy
+ * @author:sun
+ * @date:2018/12/26
  * @email:sunjianyun@sunkaisens.com
- * @data:2018/4/9 10:20
+ * @Description:
  */
-
-public class ContactActivity extends BaseActivity {
-    public static final String TAG = ContactActivity.class.getCanonicalName();
+public class ContactFragment extends BaseFragment {
+    public static final String TAG = ContactFragment.class.getCanonicalName();
     public static final int REQUEST_CALL_PHONE_PERMISSION = 540;
     @BindView(R.id.contact_list)
     RecyclerView contactList;
-    @BindView(R.id.main_toolbar)
-    Toolbar toolbar;
     @BindView(R.id.no_contact_layout)
     RelativeLayout noContactLayout;
 
@@ -50,17 +45,16 @@ public class ContactActivity extends BaseActivity {
 
 
     @Override
-    protected void initView() {
+    protected void initView(View view) {
 
-        setSupportActionBar(toolbar);
 
         initContact();
 
         //有联系人数据
         if (contactLists != null && contactLists.size() != 0) {
-            ContactAdapter adapter = new ContactAdapter(this, contactLists, R.layout.fragment_contact_layout_item);
+            ContactAdapter adapter = new ContactAdapter(getContext(), contactLists, 0);
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
             contactList.setLayoutManager(linearLayoutManager);
@@ -70,12 +64,20 @@ public class ContactActivity extends BaseActivity {
 
                 @Override
                 public void onItemClick(RecyclerView parent, View view, int position) {
-                    number = contactLists.get(position);
-                    showSelectDialog(number);
+
+                    if (position == 0) {
+                        //跳转到我的群组界面
+
+                    } else {
+                        number = contactLists.get(position);
+                        showSelectDialog(number);
+                    }
+
+
                 }
             });
 
-            //没有联系人数据¬
+            //没有联系人数据
         } else {
 
             noContactLayout.setVisibility(View.VISIBLE);
@@ -87,7 +89,7 @@ public class ContactActivity extends BaseActivity {
 
     private void showSelectDialog(final String number) {
 
-        new AlertDialog.Builder(this).setTitle("选择业务").setItems(new String[]{"发送短消息", "拨打电话"}, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(getContext()).setTitle("选择业务").setItems(new String[]{"发送短消息", "拨打电话"}, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
@@ -96,11 +98,11 @@ public class ContactActivity extends BaseActivity {
                         Intent sendIntent = new Intent(Intent.ACTION_SENDTO);
                         sendIntent.setData(Uri.parse("smsto:" + number));
                         sendIntent.putExtra("sms_body", "");
-                        ContactActivity.this.startActivity(sendIntent);
+                        getContext().startActivity(sendIntent);
                         break;
                     //拨打电话
                     case 1:
-                        if (ActivityCompat.checkSelfPermission(ContactActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                             Log.e("sjy", "未授权");
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE_PERMISSION);
@@ -125,37 +127,22 @@ public class ContactActivity extends BaseActivity {
         Intent intent = new Intent(Intent.ACTION_CALL);
         Uri data = Uri.parse("tel:" + number);
         intent.setData(data);
-        ContactActivity.this.startActivity(intent);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.setting:
-
-                go(SettingActivity.class);
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+        startActivity(intent);
     }
 
 
     @Override
     protected int initLayout() {
-        return R.layout.activity_contact;
+        return R.layout.fragment_contact;
     }
 
     private void initContact() {
-
         contactLists = GlobalVar.getGlobalVar().getContactLists();
+
+        for (int i = 0; i < 10; i++) {
+            contactLists.add("1550112986" + i);
+        }
+
     }
 
     @Override
@@ -166,7 +153,7 @@ public class ContactActivity extends BaseActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     call(number);
                 } else {
-                    ToastUtils.showToast(this, "拨打电话权限拒绝,拨号失败");
+                    ToastUtils.showToast(getContext(), "拨打电话权限拒绝,拨号失败");
                 }
                 break;
             default:

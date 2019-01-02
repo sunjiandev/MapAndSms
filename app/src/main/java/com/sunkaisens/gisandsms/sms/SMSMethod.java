@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Javen on 2016-03-15.
+ * Created sjy
  */
 public class SMSMethod {
     private static  SMSMethod mSMSmsMethod;
@@ -18,6 +18,7 @@ public class SMSMethod {
      * 自定义ACTION常数，作为广播的Intent Filter识别常数
      */
     public static String SMS_SEND_ACTIOIN = "SMS_SEND_ACTIOIN";
+
     public static String SMS_DELIVERED_ACTION = "SMS_DELIVERED_ACTION";
 
     /**

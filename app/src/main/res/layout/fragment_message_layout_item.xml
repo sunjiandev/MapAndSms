@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/layout_checked_bg_selector"
+    app:cardCornerRadius="6dp">
+
+    <RelativeLayout
+        android:id="@+id/user_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <ImageView
+            android:id="@+id/user_icon"
+            android:layout_width="48sp"
+            android:layout_height="48sp"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/icon" />
+
+        <View
+            android:id="@+id/line"
+            android:layout_width="1.5dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/user_icon"
+            android:background="#33000000" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toRightOf="@id/line"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/message_user_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15501129866" />
+
+            <TextView
+                android:id="@+id/message_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxEms="10"
+                android:maxLines="1"
+                android:text="说实话实话实说还是上号时好时坏实话实说" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/receive_sms_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="30dp"
+            android:text="2018-12-26" />
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/unread_message_tips"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/icon_unread_shape" />
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

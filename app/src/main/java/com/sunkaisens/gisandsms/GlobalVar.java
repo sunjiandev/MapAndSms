@@ -28,6 +28,7 @@ public class GlobalVar {
         }
         return globalVar;
     }
+
     /**
      * 发出去的文本消息
      */
@@ -111,19 +112,20 @@ public class GlobalVar {
     public static final int TYPE_UPLOAD_TIME = 454;
 
 
-
     public static final String REQUEST_API = "/api/user_coordinateapi";
-
 
     /**
      * 短信中心的号码
      */
 
     public static final String SMS_CENTER_NUMBER = "15320011990";
+
+
     /**
      * 保存最后一条聊天记录的集合
      */
     private List<LastMessageSMS> lastMessageSMSList = new ArrayList<>();
+
 
     /**
      * 获取最后一条记录的数据
@@ -172,6 +174,4 @@ public class GlobalVar {
         contactLists.clear();
         contacts.addAll(contacts);
     }
-
-
 }

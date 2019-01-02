@@ -25,6 +25,7 @@
     <string name="message_permission_rationale">程序需要被授予以下权限以继续</string>
     <string name="tips">提示</string>
     <string name="resume">确认</string>
+    <string name="my_group">我的群组</string>
 
     <string-array name="post_distance">
         <item>20</item>

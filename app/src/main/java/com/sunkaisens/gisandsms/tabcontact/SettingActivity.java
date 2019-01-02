@@ -1,4 +1,4 @@
-package com.sunkaisens.gisandsms.contact;
+package com.sunkaisens.gisandsms.tabcontact;
 
 import android.app.DownloadManager;
 import android.content.Context;

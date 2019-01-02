@@ -39,7 +39,6 @@ import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.MainActivity;
 import com.sunkaisens.gisandsms.R;
 import com.sunkaisens.gisandsms.RuntimeRationale;
-import com.sunkaisens.gisandsms.contact.ContactActivity;
 import com.sunkaisens.gisandsms.event.ContactLocation;
 import com.sunkaisens.gisandsms.event.ContactsLocations;
 import com.sunkaisens.gisandsms.event.MessageEvent;
@@ -61,6 +60,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.sunkaisens.gisandsms.tabcontact.ContactFragment.REQUEST_CALL_PHONE_PERMISSION;
 
 /**
  * @author sun
@@ -456,7 +457,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
                         if (ActivityCompat.checkSelfPermission(MapActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                             Log.e("sjy", "未授权");
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, ContactActivity.REQUEST_CALL_PHONE_PERMISSION);
+                                requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE_PERMISSION);
                             }
                             return;
                         } else {

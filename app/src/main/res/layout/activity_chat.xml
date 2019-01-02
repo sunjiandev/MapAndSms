@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F0F0"
+    android:fitsSystemWindows="true"
+    tools:context=".chat.ChatActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/chat_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/toolbar_theme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="@string/app_name" />
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/rl_message_input"
+        android:layout_below="@id/chat_toolbar" />
+
+
+    <View
+        android:id="@+id/bottom_line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_above="@+id/rl_message_input"
+        android:background="@color/colorHomeBottomLine" />
+
+    <LinearLayout
+        android:id="@+id/rl_message_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/emojicon_layout"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <ImageView
+                android:id="@+id/iv_voice_message"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/iv_keybroad"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/et_message_input"
+                style="@style/MyEditText"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_weight="1"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:textCursorDrawable="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/btu_message_voice"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_weight="1"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:textColor="@color/tab_unchecked"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btu_press_speak"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_weight="1"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/iv_emoticon_message"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_margin="3dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/iv_mine_add"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_margin="3dp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btu_send_content"
+                android:layout_width="48dp"
+                android:layout_height="34dp"
+                android:background="@drawable/send_local_checked_bg_selector"
+                android:text="发送"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:visibility="visible" />
+        </LinearLayout>
+
+
+        <!--点击 加号显示的布局 -->
+
+
+        <LinearLayout
+            android:id="@+id/add_layout"
+            android:layout_width="match_parent"
+            android:layout_height="232dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/chat_gallery_picture"
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/chat_take_photo"
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/chat_audio_call"
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/chat_video_call"
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/_chat_file"
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <!--emoji 布局-->
+        <FrameLayout
+            android:id="@+id/emojicon_layout"
+            android:layout_width="match_parent"
+            android:layout_height="282dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorPrimary"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

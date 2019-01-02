@@ -46,8 +46,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".contact.ContactActivity" />
-        <activity android:name=".contact.SettingActivity" />
+        <activity android:name=".tabcontact.SettingActivity" />
         <activity android:name=".MainActivity" />
         <activity
             android:name=".chat.ChatActivity"
