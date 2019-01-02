@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -29,6 +28,7 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapException;
 import com.amap.api.maps.CoordinateConverter;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.MapsInitializer;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
@@ -43,9 +43,8 @@ import com.sunkaisens.gisandsms.contact.ContactActivity;
 import com.sunkaisens.gisandsms.event.ContactLocation;
 import com.sunkaisens.gisandsms.event.ContactsLocations;
 import com.sunkaisens.gisandsms.event.MessageEvent;
-import com.sunkaisens.gisandsms.event.MessageSMS;
 import com.sunkaisens.gisandsms.sms.ReceiveSmsService;
-import com.sunkaisens.gisandsms.sms.SMSMethod;
+import com.sunkaisens.gisandsms.utils.OffLineMapUtils;
 import com.sunkaisens.gisandsms.utils.SpUtil;
 import com.sunkaisens.gisandsms.utils.ToastUtils;
 import com.yanzhenjie.permission.Action;
@@ -56,18 +55,12 @@ import com.yanzhenjie.permission.Setting;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.litepal.crud.DataSupport;
 
-import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author sun
@@ -76,7 +69,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
 
     @BindView(R.id.map)
     MapView map;
-
     @BindView(R.id.message)
     ImageView message;
     @BindView(R.id.contact)
@@ -93,9 +85,27 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        ButterKnife.bind(this);
+        map.onCreate(savedInstanceState);
+
+        MapsInitializer.sdcardDir =OffLineMapUtils.getSdCacheDir(this);
+
+        if (aMap == null) {
+            aMap = this.map.getMap();
+        }
 
 
-        initMapPath();
+        /***********************设置自己的定位点显示***************************/
+        aMap.setMyLocationEnabled(true);
+        //初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
+        // 连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+        myLocationStyle = new MyLocationStyle();
+        //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
+        myLocationStyle.interval(2000);
+        //设置定位蓝点的Style
+        aMap.setMyLocationStyle(myLocationStyle);
+        // 设置为
+
 
         getFirstData();
         if (!EventBus.getDefault().isRegistered(this)) {
@@ -107,20 +117,8 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
 
         checkLocationPermission();
 
-        ButterKnife.bind(this);
-        if (aMap == null) {
-            aMap = this.map.getMap();
-        }
-        map.onCreate(savedInstanceState);
-        //初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);
-        // 连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
-        myLocationStyle = new MyLocationStyle();
-        //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
-        myLocationStyle.interval(2000);
-        //设置定位蓝点的Style
-        aMap.setMyLocationStyle(myLocationStyle);
-        // 设置为
-        aMap.setMyLocationEnabled(true);
+        initMapPath();
+
     }
 
     /**
@@ -133,11 +131,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
     }
 
     private void initMapPath() {
-        File directory = Environment.getExternalStorageDirectory();
-        File gisMap = new File(directory, "GisMap");
-        if (!gisMap.exists()) {
-            gisMap.mkdir();
-        }
         downloadOffMap();
     }
 
@@ -169,8 +162,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
                     }
                 })
                 .start();
-
-
     }
 
     /**
@@ -219,6 +210,8 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
      * 下载地图
      */
     private void downloadOffMap() {
+
+        MapsInitializer.sdcardDir =OffLineMapUtils.getSdCacheDir(this);
 
         OfflineMapManager manager = new OfflineMapManager(this, this);
         OfflineMapCity nanjing = manager.getItemByCityCode("nanjing");
@@ -361,9 +354,41 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         addMarker(location.getU(), Float.valueOf(location.getLat()), Float.valueOf(location.getLon()));
     }
 
+
+    /**
+     * 方法必须重写
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        map.onResume();
+    }
+
+    /**
+     * 方法必须重写
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        map.onPause();
+    }
+
+    /**
+     * 方法必须重写
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        map.onSaveInstanceState(outState);
+    }
+
+    /**
+     * 方法必须重写
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        map.onDestroy();
         EventBus.getDefault().unregister(this);
         stopService(new Intent(this, GpsService.class));
     }
