@@ -20,6 +20,7 @@ import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.R;
 import com.sunkaisens.gisandsms.base.BaseFragment;
 import com.sunkaisens.gisandsms.base.BaseRecyclerAdapter;
+import com.sunkaisens.gisandsms.chat.ChatActivity;
 import com.sunkaisens.gisandsms.utils.ToastUtils;
 
 import java.util.List;
@@ -52,7 +53,7 @@ public class ContactFragment extends BaseFragment {
 
         //有联系人数据
         if (contactLists != null && contactLists.size() != 0) {
-            ContactAdapter adapter = new ContactAdapter(getContext(), contactLists, 0);
+            ContactAdapter adapter = new ContactAdapter(getContext(), contactLists);
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -60,20 +61,17 @@ public class ContactFragment extends BaseFragment {
             contactList.setLayoutManager(linearLayoutManager);
             contactList.setAdapter(adapter);
 
-            adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
-
+            adapter.setOnItemClickListener(new ContactAdapter.OnItemClickListener() {
                 @Override
-                public void onItemClick(RecyclerView parent, View view, int position) {
-
+                public void onItemClick(View view, int position) {
                     if (position == 0) {
                         //跳转到我的群组界面
+                        go(MyGroupActivity.class);
 
                     } else {
-                        number = contactLists.get(position);
+                        number = contactLists.get(position-1);
                         showSelectDialog(number);
                     }
-
-
                 }
             });
 
@@ -95,10 +93,10 @@ public class ContactFragment extends BaseFragment {
                 switch (which) {
                     //发送短信
                     case 0:
-                        Intent sendIntent = new Intent(Intent.ACTION_SENDTO);
-                        sendIntent.setData(Uri.parse("smsto:" + number));
-                        sendIntent.putExtra("sms_body", "");
-                        getContext().startActivity(sendIntent);
+                        Intent chatIntent = new Intent(ContactFragment.this.getContext(), ChatActivity.class);
+                        chatIntent.putExtra(GlobalVar.INTENT_DATA, number);
+                        chatIntent.putExtra(GlobalVar.INTENT_GROUP, false);
+                        startActivity(chatIntent);
                         break;
                     //拨打电话
                     case 1:
@@ -137,11 +135,13 @@ public class ContactFragment extends BaseFragment {
     }
 
     private void initContact() {
+
         contactLists = GlobalVar.getGlobalVar().getContactLists();
 
-        for (int i = 0; i < 10; i++) {
-            contactLists.add("1550112986" + i);
-        }
+        Log.d("sjy","contact list size:"+contactLists.size());
+//        for (int i = 0; i < 10; i++) {
+//            contactLists.add("1550112986" + i);
+//        }
 
     }
 

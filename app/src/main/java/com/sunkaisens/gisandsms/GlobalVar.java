@@ -76,6 +76,10 @@ public class GlobalVar {
      */
     public static final String INTENT_DATA = "intent_data";
     /**
+     * intent 传递数据的key
+     */
+    public static final String INTENT_GROUP = "intent_data_group";
+    /**
      * 标记的网络的状态
      */
     public static boolean NETWORKISCONNNECT = true;
@@ -112,7 +116,22 @@ public class GlobalVar {
     public static final int TYPE_UPLOAD_TIME = 454;
 
 
-    public static final String REQUEST_API = "/api/user_coordinateapi";
+    /**
+     * 接口地址
+     */
+    public static final String REQUEST_API = "/api/user_coordinate";
+
+    /**
+     * 获取群组寄群成员
+     */
+
+    public static final String REQUEST_API_GROUP = "service-group/list";
+
+    /**
+     * 发送群组消息的请求链接,需要拼接组号
+     */
+
+    public static final String REQUEST_API_GROUP_MSG = "service-group/list/";
 
     /**
      * 短信中心的号码
@@ -155,6 +174,50 @@ public class GlobalVar {
         lastMessageSMSList.addAll(smsList);
     }
 
+    /**
+     * 组号
+     */
+
+    private String groupNo;
+
+    /**
+     * 获取组号
+     * @return 组号
+     */
+    public String getGroupNo() {
+        return groupNo;
+    }
+
+    /**
+     * 设置组号
+     * @param groupNo 组号
+     */
+    public void setGroupNo(String groupNo) {
+        this.groupNo = groupNo;
+    }
+
+    public static class SEND_MSG_TYPE {
+
+        /**
+         * 普通的文本消息
+         */
+        public static final int NORMAL_MSG = 2;
+        /**
+         * gis 消息
+         */
+        public static final int GIS_MSG = 1;
+        /**
+         * 群组消息
+         */
+        public static final int GROUP_MSG = 0;
+
+        /**
+         * gis群组消息
+         */
+        public static final int GIS_GROUP_MSG = 3;
+
+    }
+
 
     /**
      * 获取联系人的集合
@@ -172,6 +235,8 @@ public class GlobalVar {
      */
     public void setContactList(List<String> contacts) {
         contactLists.clear();
-        contacts.addAll(contacts);
+        contactLists.addAll(contacts);
     }
+
+
 }

@@ -42,6 +42,8 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
     private String remoteNumber;
     private ChatPresenter presenter;
 
+    private boolean isGroup;
+
     @Override
     protected void initView() {
 
@@ -50,9 +52,11 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
 
         remoteNumber = getIntent().getStringExtra(GlobalVar.INTENT_DATA);
 
+        isGroup = getIntent().getBooleanExtra(GlobalVar.INTENT_GROUP, false);
+
         presenter = new ChatPresenter(this, remoteNumber);
 
-        presenter.initAdapter(recyclerViewChat);
+        presenter.initAdapter(recyclerViewChat, isGroup);
 
         chatToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +80,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
     public void onViewClicked() {
         String sms = etMessageInput.getText().toString().trim();
         if (!TextUtils.isEmpty(sms)) {
-            presenter.sendSms(sms);
+            presenter.sendSms(sms, isGroup);
             etMessageInput.setText("");
         }
     }
@@ -84,6 +88,9 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.chat_menu, menu);
+        if (!isGroup) {
+            menu.getItem(1).setVisible(false);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -92,6 +99,9 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
         switch (item.getItemId()) {
             case R.id.call:
                 call(remoteNumber);
+                break;
+            case R.id.group_info:
+                showToast("查看群组详情");
                 break;
             default:
                 break;

@@ -31,5 +31,10 @@ public interface MessageContract {
          * 初始化适配器
          */
         void initAdapter(RecyclerView recyclerView);
+
+        /**
+         * 刷新数据
+         */
+        void reflashData();
     }
 }

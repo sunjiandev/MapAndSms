@@ -34,4 +34,10 @@ public class MessageFragment extends BaseFragment implements MessageContract.Vie
     protected int initLayout() {
         return R.layout.fragment_message;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+       presenter.initAdapter(listviewMessage);
+    }
 }

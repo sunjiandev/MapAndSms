@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.SmsManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +87,7 @@ public class SMSMethod {
             List<String> divideContents = smsManager.divideMessage(strMessage);
             for (String text:divideContents) {
                  /* 发送SMS短信，注意倒数的两个PendingIntent参数 */
+                Log.d("sjy","send sms body :"+strMessage);
                 smsManager.sendTextMessage(strDestAddress, null, text, mSendPI, mDeliverPI);
             }
 

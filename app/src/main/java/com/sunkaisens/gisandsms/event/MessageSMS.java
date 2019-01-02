@@ -64,6 +64,11 @@ public class MessageSMS extends DataSupport implements Parcelable {
      */
     private String localMsgID;
 
+    /**
+     * 组号
+     */
+    private String groupNumber;
+
     public String getRemoteAccount() {
         return remoteAccount;
     }
@@ -160,6 +165,14 @@ public class MessageSMS extends DataSupport implements Parcelable {
         this.localMsgID = localMsgID;
     }
 
+    public String getGroupNumber() {
+        return groupNumber;
+    }
+
+    public void setGroupNumber(String groupNumber) {
+        this.groupNumber = groupNumber;
+    }
+
     @Override
     public String toString() {
         return "MessageSMS{" +
@@ -175,6 +188,7 @@ public class MessageSMS extends DataSupport implements Parcelable {
                 ", msgType=" + msgType +
                 ", fileProgress=" + fileProgress +
                 ", localMsgID='" + localMsgID + '\'' +
+                ", groupNumber='" + groupNumber + '\'' +
                 '}';
     }
 
@@ -197,6 +211,7 @@ public class MessageSMS extends DataSupport implements Parcelable {
         dest.writeInt(this.msgType);
         dest.writeInt(this.fileProgress);
         dest.writeString(this.localMsgID);
+        dest.writeString(this.groupNumber);
     }
 
     public MessageSMS() {
@@ -215,9 +230,10 @@ public class MessageSMS extends DataSupport implements Parcelable {
         this.msgType = in.readInt();
         this.fileProgress = in.readInt();
         this.localMsgID = in.readString();
+        this.groupNumber = in.readString();
     }
 
-    public static final Parcelable.Creator<MessageSMS> CREATOR = new Parcelable.Creator<MessageSMS>() {
+    public static final Creator<MessageSMS> CREATOR = new Creator<MessageSMS>() {
         @Override
         public MessageSMS createFromParcel(Parcel source) {
             return new MessageSMS(source);

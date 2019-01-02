@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
@@ -40,9 +41,11 @@ import com.sunkaisens.gisandsms.MainActivity;
 import com.sunkaisens.gisandsms.R;
 import com.sunkaisens.gisandsms.RuntimeRationale;
 import com.sunkaisens.gisandsms.event.ContactLocation;
-import com.sunkaisens.gisandsms.event.ContactsLocations;
 import com.sunkaisens.gisandsms.event.MessageEvent;
+import com.sunkaisens.gisandsms.event.ServerInfo;
 import com.sunkaisens.gisandsms.sms.ReceiveSmsService;
+import com.sunkaisens.gisandsms.sms.SMSMethod;
+import com.sunkaisens.gisandsms.utils.BaseUtils;
 import com.sunkaisens.gisandsms.utils.OffLineMapUtils;
 import com.sunkaisens.gisandsms.utils.SpUtil;
 import com.sunkaisens.gisandsms.utils.ToastUtils;
@@ -89,7 +92,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         ButterKnife.bind(this);
         map.onCreate(savedInstanceState);
 
-        MapsInitializer.sdcardDir =OffLineMapUtils.getSdCacheDir(this);
+        MapsInitializer.sdcardDir = OffLineMapUtils.getSdCacheDir(this);
 
         if (aMap == null) {
             aMap = this.map.getMap();
@@ -127,7 +130,37 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
      */
     private void getFirstData() {
 
-//        SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, GlobalVar.GET_CONTACTS_LOCATION);
+
+        String localNumber = BaseUtils.getInstance().getLocalNumber(this);
+
+        if (!TextUtils.isEmpty(localNumber)) {
+            localNumber = "sip:" + localNumber + "@test.com";
+//            SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, localNumber);
+        }
+        //获取群组信息以及群组号码
+
+        ServerInfo info = new ServerInfo();
+        info.setU(BaseUtils.getInstance().getLocalNumber(this));
+        info.setB("");
+        info.setM("GET");
+        info.setR(GlobalVar.REQUEST_API_GROUP);
+        info.setT(GlobalVar.SEND_MSG_TYPE.GROUP_MSG);
+        String strJson = JSON.toJSONString(info);
+        Log.d("sjy", "json str :" + strJson);
+//        SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);
+
+
+        //拉所有人的实时位置
+
+        ServerInfo serverInfo = new ServerInfo();
+        serverInfo.setT(GlobalVar.SEND_MSG_TYPE.GIS_MSG);
+        serverInfo.setM("GET");
+        serverInfo.setR(GlobalVar.REQUEST_API);
+        serverInfo.setU(BaseUtils.getInstance().getLocalNumber(this));
+        serverInfo.setB("");
+        String jsonString = JSON.toJSONString(serverInfo);
+//        SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, jsonString);
+
 
     }
 
@@ -212,7 +245,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
      */
     private void downloadOffMap() {
 
-        MapsInitializer.sdcardDir =OffLineMapUtils.getSdCacheDir(this);
+        MapsInitializer.sdcardDir = OffLineMapUtils.getSdCacheDir(this);
 
         OfflineMapManager manager = new OfflineMapManager(this, this);
         OfflineMapCity nanjing = manager.getItemByCityCode("nanjing");
@@ -315,16 +348,13 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
     /**
      * 多个用户的位置推送
      *
-     * @param locations 位置数据
+     * @param contactLocations 位置数据集合
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onReceiveLocations(ContactsLocations locations) {
+    public void onReceiveLocations(List<ContactLocation> contactLocations) {
         Log.d("sjy", "receive locations event :" + message.toString());
         //显示未读消息提示
-
-        List<ContactsLocations.DataBean> data = locations.getData();
-        for (ContactsLocations.DataBean location : data
-                ) {
+        for (ContactLocation location : contactLocations) {
             addMarker(location.getU(), Float.valueOf(location.getLat()), Float.valueOf(location.getLon()));
         }
 

@@ -1,23 +1,22 @@
 package com.sunkaisens.gisandsms.tabmessage.presenter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
+import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.R;
 import com.sunkaisens.gisandsms.base.BaseRecyclerAdapter;
 import com.sunkaisens.gisandsms.chat.ChatActivity;
 import com.sunkaisens.gisandsms.event.LastMessageSMS;
-import com.sunkaisens.gisandsms.event.MessageSMS;
 import com.sunkaisens.gisandsms.tabmessage.LastMessageSmsAdapter;
 import com.sunkaisens.gisandsms.tabmessage.MessageFragment;
 import com.sunkaisens.gisandsms.tabmessage.contract.MessageContract;
 import com.sunkaisens.gisandsms.utils.ListenerHelper;
 
 import org.litepal.crud.DataSupport;
-import org.litepal.crud.callback.UpdateOrDeleteCallback;
 
 import java.util.List;
 
@@ -70,12 +69,25 @@ public class MessagePresenter implements MessageContract.Presenter, ListenerHelp
             public void onItemClick(RecyclerView parent, View view, int position) {
                 LastMessageSMS lastMessageSMS = MessagePresenter.this.lastMessageSMS.get(position);
                 String number = lastMessageSMS.getRemoteNumber();
-                MessagePresenter.this.view.go(ChatActivity.class, number);
+                Intent intent = new Intent(context, ChatActivity.class);
+                intent.putExtra(GlobalVar.INTENT_DATA,number);
+                if (number.length()<8){
+                    intent.putExtra(GlobalVar.INTENT_GROUP,true);
+                }
+               context.startActivity(intent);
 
             }
         });
 
 
+    }
+
+    @Override
+    public void reflashData() {
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     /**

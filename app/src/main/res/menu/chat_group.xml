@@ -4,15 +4,7 @@
 
     <item
         android:id="@+id/call"
-        android:icon="@mipmap/call"
-        android:title="@string/call"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/group_info"
-        android:title="@string/group_info"
-        android:visible="true"
+        android:title="群组详情"
         app:showAsAction="never" />
-
 
 </menu>

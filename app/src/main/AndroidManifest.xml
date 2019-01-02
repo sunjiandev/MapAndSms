@@ -52,6 +52,10 @@
             android:name=".chat.ChatActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".tabcontact.MyGroupActivity"
+            android:launchMode="singleTop"
+
+            />
 
         <meta-data
             android:name="com.amap.api.v2.apikey"

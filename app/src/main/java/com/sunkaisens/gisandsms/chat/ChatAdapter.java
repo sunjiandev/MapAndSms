@@ -12,6 +12,8 @@ import com.sunkaisens.gisandsms.base.BaseRecyclerHolder;
 import com.sunkaisens.gisandsms.event.MessageSMS;
 import com.sunkaisens.gisandsms.utils.BaseUtils;
 
+import org.litepal.tablemanager.Connector;
+
 import java.util.List;
 
 /**
@@ -38,7 +40,7 @@ public class ChatAdapter extends BaseRecyclerAdapter<MessageSMS> {
 
         MessageSMS messageSMS = new MessageSMS();
         messageSMS.setIsRead(0);
-        messageSMS.updateAll("localaccount = ? and remoteaccount =? and localmsgid = ? ",item.getLocalAccount(),item.getRemoteAccount(),item.getLocalMsgID());
+        messageSMS.updateAll("localaccount = ? and remoteaccount =? and localmsgid = ? ", item.getLocalAccount(), item.getRemoteAccount(), item.getLocalMsgID());
 
 
         switch (msgType) {
@@ -47,13 +49,14 @@ public class ChatAdapter extends BaseRecyclerAdapter<MessageSMS> {
                 holder.setText(R.id.send_msg_text, item.getMsg());
                 break;
             case GlobalVar.IN_TEXT_MESSAGE:
+
+                String sql = "UPDATE messagesms SET isread = 0 WHERE localaccount = '" + item.getLocalAccount() + "' and remoteaccount = '" + item.getRemoteAccount() + "'";
+                Connector.getDatabase().execSQL(sql);
+
                 holder.setText(R.id.receive_msg_text_time, BaseUtils.getInstance().formatLongTime(item.getStartTime()));
                 holder.setText(R.id.receive_msg_text, item.getMsg());
                 Log.d("sjy", "update sms is :" + item.toString());
                 Log.d("sjy", "update database sms is read");
-                MessageSMS sms = new MessageSMS();
-                sms.setIsRead(0);
-                sms.updateAllAsync("localaccount = ? and remoteaccount = ? and localmsgid = ?",item.getLocalAccount(),item.getRemoteAccount(),item.getLocalMsgID());
 
                 break;
             default:

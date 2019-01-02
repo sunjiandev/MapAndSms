@@ -17,7 +17,13 @@ public class ContactLocation {
      */
 
     private String u;
+    /**
+     * 经度 大
+     */
     private String lon;
+    /**
+     * 纬度 小
+     */
     private String lat;
     private String mTime;
 

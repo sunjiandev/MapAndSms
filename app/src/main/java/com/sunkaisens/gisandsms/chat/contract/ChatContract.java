@@ -27,7 +27,7 @@ public interface ChatContract {
          *
          * @param recyclerView 列表
          */
-        void initAdapter(RecyclerView recyclerView);
+        void initAdapter(RecyclerView recyclerView,boolean group);
 
         /**
          * 获取聊天数据
@@ -41,7 +41,7 @@ public interface ChatContract {
          *
          * @param sms 短信内容
          */
-        void sendSms(String sms);
+        void sendSms(String sms, boolean group);
 
         /**
          * 拨打电话

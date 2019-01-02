@@ -10,13 +10,15 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.MyApp;
 import com.sunkaisens.gisandsms.event.ContactLocation;
-import com.sunkaisens.gisandsms.event.ContactsLocations;
+import com.sunkaisens.gisandsms.event.GroupInfo;
 import com.sunkaisens.gisandsms.event.LastMessageSMS;
 import com.sunkaisens.gisandsms.event.MessageEvent;
 import com.sunkaisens.gisandsms.event.MessageSMS;
+import com.sunkaisens.gisandsms.event.ReceiveServerMsg;
 import com.sunkaisens.gisandsms.utils.BaseUtils;
 import com.sunkaisens.gisandsms.utils.ListenerHelper;
 
@@ -97,31 +99,52 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
                     Log.d("sjy", "get sms from database number is : " + strAddress);
                     Log.d("sjy", "get sms from database smsid is : " + smsid);
 
-                    //收到的推送的位置数据
-                    if (strbody.contains("code") && strbody.contains("message") && strbody.contains("data")) {
 
-                        ContactsLocations contactsLocations = JSON.parseObject(strbody, ContactsLocations.class);
+                    try {
+                        ReceiveServerMsg msg = JSON.parseObject(strbody, ReceiveServerMsg.class);
 
-                        EventBus.getDefault().post(contactsLocations);
+                        Log.d("sjy", "parse json to bean :" + msg.toString());
 
-                        //单个位置变化
-                    } else if (strbody.contains("u") && strbody.contains("lon") && strbody.contains("lat")) {
+                        switch (msg.getType()) {
+                            //收到的gis消息
+                            case GlobalVar.SEND_MSG_TYPE.GIS_MSG:
+                                String result = msg.getResult();
+                                Log.d("sjy", "get gis data :" + result);
+                                ContactLocation contactLocation = JSON.parseObject(result, ContactLocation.class);
+                                EventBus.getDefault().post(contactLocation);
+                                break;
+                            //收到的群组好友列表
+                            case GlobalVar.SEND_MSG_TYPE.GIS_GROUP_MSG:
 
-                        ContactLocation contactLocation = JSON.parseObject(strbody, ContactLocation.class);
+                                GroupInfo groupInfo = JSON.parseObject(msg.getResult(), GroupInfo.class);
+                                Log.d("sjy", "set contact list :" + groupInfo.getUri().size());
+                                GlobalVar.getGlobalVar().setContactList(groupInfo.getUri());
+                                Log.d("sjy", "set group no :" + groupInfo.getGroupNo());
+                                GlobalVar.getGlobalVar().setGroupNo(groupInfo.getGroupNo());
+                                break;
 
-                        EventBus.getDefault().post(contactLocation);
+                            //群组消息
+                            case GlobalVar.SEND_MSG_TYPE.NORMAL_MSG:
 
-                    } else {
+                                break;
+                            //全部好友的gis位置信息
+                            case GlobalVar.SEND_MSG_TYPE.GROUP_MSG:
+                                List<ContactLocation> contactLocations = JSON.parseArray(strbody, ContactLocation.class);
+                                EventBus.getDefault().post(contactLocations);
+                                break;
+                            default:
 
-
+                                break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("sjy", "parse has exception ");
                         //获取到短信的数据
                         LastMessageSMS lastMessageSMS = new LastMessageSMS();
                         lastMessageSMS.setData(System.currentTimeMillis());
                         lastMessageSMS.setLastSMS(strbody);
                         lastMessageSMS.setRemoteNumber(strAddress);
                         String localNumber = BaseUtils.getInstance().getLocalNumber(MyApp.getContext());
-
-
                         List<LastMessageSMS> list = DataSupport.where("localNumber = ? and remoteNumber = ?", localNumber, strAddress).find(LastMessageSMS.class);
                         //更新
                         if (list != null && list.size() != 0) {
@@ -132,7 +155,6 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
                             lastMessageSMS.setRemoteNumber(strAddress);
                             lastMessageSMS.setLocalNumber(BaseUtils.getInstance().getLocalNumber(MyApp.getContext()));
                             lastMessageSMS.save();
-
                             ListenerHelper.executeOnReceiveNewMessageSms(lastMessageSMS);
                         }
                         saveSms(strAddress, strbody, MyApp.getContext());
@@ -165,7 +187,7 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
      */
     private void saveSms(String num, String con, Context context) {
         MessageSMS messageSMS = new MessageSMS();
-        messageSMS.setIsRead(0);
+        messageSMS.setIsRead(1);
         messageSMS.setMsgType(GlobalVar.IN_TEXT_MESSAGE);
         messageSMS.setLocalAccount(BaseUtils.getInstance().getLocalNumber(context));
         messageSMS.setLocalMsgID(UUID.randomUUID().toString());

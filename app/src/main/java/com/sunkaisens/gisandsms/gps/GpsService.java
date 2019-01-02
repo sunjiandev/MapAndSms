@@ -182,7 +182,7 @@ public class GpsService extends Service implements Runnable {
                 info.setB(strLo);
                 info.setM("POST");
                 info.setR(GlobalVar.REQUEST_API);
-                info.setT("1");
+                info.setT(GlobalVar.SEND_MSG_TYPE.GIS_MSG);
                 String strJson = JSON.toJSONString(info);
                 Log.d("sjy", "json str :" + strJson);
                 SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);

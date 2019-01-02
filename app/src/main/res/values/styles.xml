@@ -9,10 +9,12 @@
     </style>
     <!-- Toolbar的样式 -->
     <style name="toolbar_theme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="colorControlNormal">@color/colorAppMian</item>
+        <item name="colorControlNormal">@color/white</item>
         <item name="titleTextColor">@color/white</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">10sp</item>
+
     </style>
+
 
     <style name="MyTablayoutstyle" parent="Base.Widget.Design.TabLayout">
         <item name="tabBackground">@color/white</item>

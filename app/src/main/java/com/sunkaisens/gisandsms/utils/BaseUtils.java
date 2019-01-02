@@ -214,9 +214,6 @@ public class BaseUtils {
     public String getLocalNumber(Context context) {
         TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-
-
-
             return "";
         } else {
             String line1Number = manager.getLine1Number();
@@ -226,7 +223,9 @@ public class BaseUtils {
             Log.d("sjy", "get my simCountryIso :" + simCountryIso);
             manager.getSimState();
 
-
+            if (line1Number == null) {
+                line1Number = "";
+            }
             return line1Number;
         }
 

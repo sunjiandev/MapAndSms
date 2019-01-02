@@ -16,7 +16,7 @@ public class ServerInfo {
      */
 
     private String m;
-    private String t;
+    private int t;
     private String r;
     private String b;
     private String u;
@@ -54,11 +54,11 @@ public class ServerInfo {
         this.m = m;
     }
 
-    public String getT() {
+    public int getT() {
         return t;
     }
 
-    public void setT(String t) {
+    public void setT(int t) {
         this.t = t;
     }
 }

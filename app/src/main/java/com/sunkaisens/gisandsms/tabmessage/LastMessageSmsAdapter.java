@@ -1,7 +1,6 @@
 package com.sunkaisens.gisandsms.tabmessage;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 
 import com.sunkaisens.gisandsms.R;
@@ -29,6 +28,10 @@ public class LastMessageSmsAdapter extends BaseRecyclerAdapter<LastMessageSMS> {
     @Override
     public void convert(BaseRecyclerHolder holder, LastMessageSMS item, int position, boolean isScrolling, List payloads) {
 
+        List<MessageSMS> sms = DataSupport.where("localaccount = ? and remoteaccount = ? and isread = ?", item.getLocalNumber(), item.getRemoteNumber(), "1").find(MessageSMS.class);
+        if (sms != null && sms.size() != 0) {
+            holder.getView(R.id.unread_message_tips).setVisibility(View.VISIBLE);
+        }
         holder.setText(R.id.message_user_account, item.getRemoteNumber());
         holder.setText(R.id.message_content, item.getLastSMS());
     }

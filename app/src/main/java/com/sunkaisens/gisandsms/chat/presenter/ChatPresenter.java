@@ -42,6 +42,7 @@ public class ChatPresenter implements Presenter {
     private ChatAdapter adapter;
     private List<MessageSMS> messageSMS;
     private RecyclerView mRecyclerView;
+    private boolean group;
 
     public ChatPresenter(ChatContract.View view, String remoteNumber) {
         this.view = (ChatActivity) view;
@@ -51,20 +52,22 @@ public class ChatPresenter implements Presenter {
         }
 
 
-
     }
 
     @Override
     public List<MessageSMS> getMessageSmsList() {
-        messageSMS = DataSupport.where("localAccount = ? and remoteAccount = ?", BaseUtils.getInstance().getLocalNumber(view), remoteNumber).find(MessageSMS.class);
-        Log.d("sjy", "get message sms list size :" + messageSMS.size());
+        if (group) {
+            messageSMS = DataSupport.where("groupNumber = ?", remoteNumber).find(MessageSMS.class);
+        } else {
+            messageSMS = DataSupport.where("localAccount = ? and remoteAccount = ?", BaseUtils.getInstance().getLocalNumber(view), remoteNumber).find(MessageSMS.class);
+        }
         return messageSMS;
     }
 
     @Override
-    public void sendSms(String sms) {
+    public void sendSms(String sms, boolean group) {
 
-        //本地数据库数据保存
+
         MessageSMS messageSMS = new MessageSMS();
         messageSMS.setMsg(sms);
         messageSMS.setStartTime(System.currentTimeMillis());
@@ -73,11 +76,15 @@ public class ChatPresenter implements Presenter {
         messageSMS.setIsRead(0);
         messageSMS.setMsgType(GlobalVar.TO_TEXT_MESSAGE);
         messageSMS.setLocalMsgID(UUID.randomUUID().toString());
+        if (group) {
+            //设置组号
+            messageSMS.setGroupNumber(remoteNumber);
+        }
         messageSMS.save();
         adapter.insert(messageSMS);
 
         int itemCount = adapter.getItemCount();
-        Log.d("sjy","item size :"+itemCount);
+        Log.d("sjy", "item size :" + itemCount);
         mRecyclerView.smoothScrollToPosition(itemCount);
         //更新历史记录
 
@@ -88,13 +95,19 @@ public class ChatPresenter implements Presenter {
 
         lastMessageSMS.updateAll("localNumber = ? and remoteNumber = ?", BaseUtils.getInstance().getLocalNumber(view), remoteNumber);
 
-        //通知刷新
+        List<LastMessageSMS> smsList = DataSupport.where("remotenumber = ?", remoteNumber).find(LastMessageSMS.class);
+        if (smsList!=null&&smsList.size()!=0){
+            //通知刷新
+            ListenerHelper.executeOnMessageUpdate(lastMessageSMS);
+        }else{
+            lastMessageSMS.save();
+            ListenerHelper.executeOnReceiveNewMessageSms(lastMessageSMS);
+        }
 
-        ListenerHelper.executeOnMessageUpdate(lastMessageSMS);
         //发送短信
         SMSMethod.getInstance(view).SendMessage(remoteNumber, sms);
-
     }
+
     @Override
     public void callPhone(String number) {
         Intent intent = new Intent(Intent.ACTION_CALL);
@@ -110,16 +123,15 @@ public class ChatPresenter implements Presenter {
 
 
     @Override
-    public void initAdapter(RecyclerView recyclerView) {
+    public void initAdapter(RecyclerView recyclerView, boolean group) {
         this.mRecyclerView = recyclerView;
+        this.group = group;
         LinearLayoutManager manager = new LinearLayoutManager(view);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
         adapter = new ChatAdapter(view, getMessageSmsList(), 0);
         recyclerView.setAdapter(adapter);
         recyclerView.smoothScrollToPosition(adapter.getItemCount());
-
-
     }
 
     /**
@@ -134,5 +146,6 @@ public class ChatPresenter implements Presenter {
             adapter.insert(sms);
         }
     }
+
 
 }
