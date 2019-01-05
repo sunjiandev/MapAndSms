@@ -141,7 +141,7 @@ public class SettingActivity extends BaseActivity {
         boolean isOpen = SpUtil.getSpUtil(this).getBoolean(GlobalVar.LOCATION, false);
         switchLocation.setChecked(isOpen);
 
-        int uploadTime = SpUtil.getSpUtil(this).getInt(GlobalVar.UPLOAD_TIME, 3);
+        int uploadTime = SpUtil.getSpUtil(this).getInt(GlobalVar.UPLOAD_TIME, 0);
         timeSpinner.setSelection(uploadTime, true);
 
 

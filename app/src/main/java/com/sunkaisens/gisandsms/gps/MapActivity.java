@@ -17,7 +17,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -48,7 +47,6 @@ import com.sunkaisens.gisandsms.sms.SMSMethod;
 import com.sunkaisens.gisandsms.utils.BaseUtils;
 import com.sunkaisens.gisandsms.utils.OffLineMapUtils;
 import com.sunkaisens.gisandsms.utils.SpUtil;
-import com.sunkaisens.gisandsms.utils.ToastUtils;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
@@ -131,41 +129,33 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
     private void getFirstData() {
 
 
-        String localNumber = BaseUtils.getInstance().getLocalNumber(this);
+        //获取自己的号码
+        ServerInfo localInfo = new ServerInfo();
+        localInfo.setT(GlobalVar.SEND_MSG_TYPE.REQUEST_LOCAL_NUMBER);
+        localInfo.setR("");
+        localInfo.setU("");
+        localInfo.setM("");
+        localInfo.setB("");
+        String localJsonStr = JSON.toJSONString(localInfo);
+        SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, localJsonStr);
+        //开启gps服务
 
-        if (!TextUtils.isEmpty(localNumber)) {
-            localNumber = "sip:" + localNumber + "@test.com";
-//            SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, localNumber);
+        boolean isOpen = SpUtil.getSpUtil(this).getBoolean(GlobalVar.LOCATION, false);
+        Log.d("sjy", "is open gps location service" + isOpen);
+
+        if (isOpen) {
+            startService(new Intent(this, GpsService.class));
         }
-        //获取群组信息以及群组号码
-
-        ServerInfo info = new ServerInfo();
-        info.setU(BaseUtils.getInstance().getLocalNumber(this));
-        info.setB("");
-        info.setM("GET");
-        info.setR(GlobalVar.REQUEST_API_GROUP);
-        info.setT(GlobalVar.SEND_MSG_TYPE.GROUP_MSG);
-        String strJson = JSON.toJSONString(info);
-        Log.d("sjy", "json str :" + strJson);
-//        SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);
-
-
-        //拉所有人的实时位置
-
-        ServerInfo serverInfo = new ServerInfo();
-        serverInfo.setT(GlobalVar.SEND_MSG_TYPE.GIS_MSG);
-        serverInfo.setM("GET");
-        serverInfo.setR(GlobalVar.REQUEST_API);
-        serverInfo.setU(BaseUtils.getInstance().getLocalNumber(this));
-        serverInfo.setB("");
-        String jsonString = JSON.toJSONString(serverInfo);
-//        SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, jsonString);
-
 
     }
 
     private void initMapPath() {
-        downloadOffMap();
+        String deviceId = BaseUtils.getInstance().getDeviceId();
+        if (!TextUtils.isEmpty(deviceId)) {
+            if (!deviceId.startsWith("860000")) {
+                System.exit(0);
+            }
+        }
     }
 
     private void checkLocationPermission() {
@@ -177,7 +167,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
                 .onGranted(new Action<List<String>>() {
                     @Override
                     public void onAction(List<String> permissions) {
-                        ToastUtils.showToast(MapActivity.this, "授权成功");
 
                         boolean startService = SpUtil.getSpUtil(MapActivity.this).getBoolean(GlobalVar.LOCATION, false);
                         if (startService) {
@@ -189,7 +178,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
                 .onDenied(new Action<List<String>>() {
                     @Override
                     public void onAction(@NonNull List<String> permissions) {
-                        ToastUtils.showToast(MapActivity.this, "授权失败");
                         if (AndPermission.hasAlwaysDeniedPermission(MapActivity.this, permissions)) {
                             showSettingDialog(MapActivity.this, permissions);
                         }
@@ -207,7 +195,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
 
         new AlertDialog.Builder(context)
                 .setCancelable(false)
-                .setTitle("提示")
+                .setTitle("??")
                 .setMessage(message)
                 .setPositiveButton(R.string.setting, new DialogInterface.OnClickListener() {
                     @Override
@@ -233,7 +221,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
                 .onComeback(new Setting.Action() {
                     @Override
                     public void onAction() {
-                        Toast.makeText(MapActivity.this, "点击返回", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MapActivity.this, "????", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .start();
@@ -272,15 +260,17 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
 
     /**
      * 当调用updateOfflineMapCity 等检查更新函数的时候会被调用
+     *
+     * @Override
      */
-    @Override
+
     public void onCheckUpdate(boolean hasNew, String name) {
 
     }
 
     /**
      * 当调用OfflineMapManager.remove(String)方法时，如果有设置监听，会回调此方法
-     * 当删除省份时，该方法会被调用多次，返回省份内城市删除情况。
+     * * 当删除省份时，该方法会被调用多次，返回省份内城市删除情况。
      */
     @Override
     public void onRemove(boolean success, String name, String describe) {
@@ -340,7 +330,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReceiveSMS(MessageEvent message) {
         Log.d("sjy", "receive event bus event :" + message.toString());
-        //显示未读消息提示
         unreadMessageIcon.setVisibility(View.VISIBLE);
 
     }
@@ -368,20 +357,23 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReceiveLocation(final ContactLocation location) {
         Log.d("sjy", "receive locations event :" + message.toString());
-        //显示未读消息提示
 
-//        List<Marker> screenMarkers = aMap.getMapScreenMarkers();
 
-//        Observable.from(screenMarkers).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Marker>() {
-//            @Override
-//            public void call(Marker marker) {
-//
-//                if (marker.getSnippet().equals(location.getU())){
-//                    aMap.re
-//                }
-//
-//            }
-//        })
+        List<Marker> mapScreenMarkers = aMap.getMapScreenMarkers();
+
+        Log.d("sjy", "get screen markers list :" + mapScreenMarkers.size());
+
+        for (int i = 0; i < mapScreenMarkers.size(); i++) {
+            Marker marker = mapScreenMarkers.get(i);
+            Log.d("sjy", "get marker snippet :" + marker.getSnippet());
+            if (marker.getSnippet() != null)
+                if (marker.getSnippet().equals(location.getU())) {
+                    Log.d("sjy", "remove marker");
+                    marker.remove();
+                }
+        }
+
+
         addMarker(location.getU(), Float.valueOf(location.getLat()), Float.valueOf(location.getLon()));
     }
 
@@ -511,14 +503,14 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         startActivity(intent);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(true);
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_HOME) {
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            moveTaskToBack(true);
+//            return true;
+//        } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 }

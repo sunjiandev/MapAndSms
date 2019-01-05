@@ -16,6 +16,7 @@ import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.model.LatLng;
 import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.R;
+import com.sunkaisens.gisandsms.event.ContactLocation;
 import com.sunkaisens.gisandsms.event.MapConfigEvent;
 import com.sunkaisens.gisandsms.event.SMSLocation;
 import com.sunkaisens.gisandsms.event.ServerInfo;
@@ -109,7 +110,7 @@ public class GpsService extends Service implements Runnable {
         Log.d("sjy", "set upload distance :" + uploadDistance);
 
         int uploadTimePosition = SpUtil.getSpUtil(this).getInt(GlobalVar.UPLOAD_TIME, 0);
-        Log.d("sjy", "get save upload time position");
+        Log.d("sjy", "get save upload time position:" + uploadTimePosition);
         String[] timeArray = getResources().getStringArray(R.array.upload_time);
         //转换成秒
         uploadTime = Integer.valueOf(timeArray[uploadTimePosition]) * 60;
@@ -141,7 +142,7 @@ public class GpsService extends Service implements Runnable {
     @Override
     public void run() {
         while (!threadDisable) {
-            SystemClock.sleep(5 * 1000);
+            SystemClock.sleep(1000);
             uploadCount++;
             //当结束服务时gps为空
             if (gps != null) {
@@ -175,19 +176,6 @@ public class GpsService extends Service implements Runnable {
                 Log.d("sjy", "two point distance :" + distance);
                 Log.d("sjy", "upload location count :" + uploadCount);
 
-
-                ServerInfo info = new ServerInfo();
-                info.setU(BaseUtils.getInstance().getLocalNumber(this));
-                String strLo = JSON.toJSONString(new SMSLocation(location.getLatitude(), location.getLongitude(), BaseUtils.getInstance().getLocalNumber(this)));
-                info.setB(strLo);
-                info.setM("POST");
-                info.setR(GlobalVar.REQUEST_API);
-                info.setT(GlobalVar.SEND_MSG_TYPE.GIS_MSG);
-                String strJson = JSON.toJSONString(info);
-                Log.d("sjy", "json str :" + strJson);
-                SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);
-
-
                 Message msg = Message.obtain();
                 msg.what = 10001;
                 msg.obj = distance;
@@ -196,7 +184,6 @@ public class GpsService extends Service implements Runnable {
                 //两点之间的距离大于设定的距离,则上班位置
                 if (distance >= uploadDistance) {
                     uploadCount = 0;
-                    // TODO: 2018/12/26 发送上报位置的短信
                     Log.d("sjy", "distance greater than config ,upload location info");
                     //发送完成之后保存上一次的位置信息
                     //纬度
@@ -204,22 +191,49 @@ public class GpsService extends Service implements Runnable {
                     //经度
                     oldLongitude = location.getLongitude();
 
+                    ServerInfo info = new ServerInfo();
+                    info.setU(BaseUtils.getInstance().getLocalNumber());
+                    String strLo = JSON.toJSONString(new SMSLocation(location.getLatitude(), location.getLongitude(), BaseUtils.getInstance().getLocalNumber()));
+                    info.setB(strLo);
+                    info.setM("POST");
+                    info.setR(GlobalVar.REQUEST_API);
+                    info.setT(GlobalVar.SEND_MSG_TYPE.GIS_MSG);
+                    String strJson = JSON.toJSONString(info);
+                    Log.d("sjy", "json str :" + strJson);
+                    SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);
+
+                    //显示自己的位置
+                    ContactLocation contactLocation = new ContactLocation();
+                    contactLocation.setU(BaseUtils.getInstance().getLocalNumber());
+                    contactLocation.setLat(location.getLatitude() + "");
+                    contactLocation.setLon(location.getLongitude() + "");
+
+                    EventBus.getDefault().post(contactLocation);
+
+
                 } else if (uploadCount >= uploadTime) {
-                    // TODO: 2018/12/26 发送上报位置的短信
                     uploadCount = 0;
                     Log.d("sjy", "time greater than config ,upload location info");
                     //纬度
                     oldLatitude = location.getLatitude();
                     //经度
                     oldLongitude = location.getLongitude();
-//                    ServerInfo info = new ServerInfo();
-//                    info.setU(BaseUtils.getInstance().getLocalNumber(this));
-//                    String strLo = JSON.toJSONString(new SMSLocation(location.getLatitude(), location.getLongitude(), BaseUtils.getInstance().getLocalNumber(this)));
-//                    info.setB(strLo);
-//                    info.setR(GlobalVar.UPLOAD_LOCATION_HEADER);
-//                    String strJson = JSON.toJSONString(info);
-//                    Log.d("sjy", "json str :" + strJson);
-//                    SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);
+                    ServerInfo gpsInfo = new ServerInfo();
+                    gpsInfo.setU(BaseUtils.getInstance().getLocalNumber());
+                    String gpsBody = JSON.toJSONString(new SMSLocation(location.getLatitude(), location.getLongitude(), BaseUtils.getInstance().getLocalNumber()));
+                    gpsInfo.setB(gpsBody);
+                    gpsInfo.setR(GlobalVar.REQUEST_API);
+                    String gpsJson = JSON.toJSONString(gpsInfo);
+                    Log.d("sjy", "json str :" + gpsJson);
+                    SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, gpsJson);
+
+                    //显示自己的位置
+                    ContactLocation contactLocation = new ContactLocation();
+                    contactLocation.setU(BaseUtils.getInstance().getLocalNumber());
+                    contactLocation.setLat(location.getLatitude() + "");
+                    contactLocation.setLon(location.getLongitude() + "");
+                    EventBus.getDefault().post(contactLocation);
+
 
                 }
 

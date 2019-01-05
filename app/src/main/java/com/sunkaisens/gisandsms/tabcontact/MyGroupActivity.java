@@ -1,7 +1,6 @@
 package com.sunkaisens.gisandsms.tabcontact;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,7 +13,6 @@ import com.sunkaisens.gisandsms.base.BaseActivity;
 import com.sunkaisens.gisandsms.chat.ChatActivity;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**

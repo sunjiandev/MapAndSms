@@ -55,7 +55,7 @@ public class ReceiverSMSBroadcast extends BroadcastReceiver {
                     lastMessageSMS.setData(System.currentTimeMillis());
                     lastMessageSMS.setLastSMS(con);
                     lastMessageSMS.setRemoteNumber(num);
-                    String localNumber = BaseUtils.getInstance().getLocalNumber(context);
+                    String localNumber = BaseUtils.getInstance().getLocalNumber();
 
 
                     List<LastMessageSMS> list = DataSupport.where("localNumber = ? and remoteNumber = ?", localNumber, num).find(LastMessageSMS.class);
@@ -66,7 +66,7 @@ public class ReceiverSMSBroadcast extends BroadcastReceiver {
                         //新存
                     } else {
                         lastMessageSMS.setRemoteNumber(num);
-                        lastMessageSMS.setLocalNumber(BaseUtils.getInstance().getLocalNumber(context));
+                        lastMessageSMS.setLocalNumber(BaseUtils.getInstance().getLocalNumber());
                         lastMessageSMS.save();
 
                         ListenerHelper.executeOnReceiveNewMessageSms(lastMessageSMS);
@@ -92,7 +92,7 @@ public class ReceiverSMSBroadcast extends BroadcastReceiver {
         MessageSMS messageSMS = new MessageSMS();
         messageSMS.setIsRead(1);
         messageSMS.setMsgType(GlobalVar.IN_TEXT_MESSAGE);
-        messageSMS.setLocalAccount(BaseUtils.getInstance().getLocalNumber(context));
+        messageSMS.setLocalAccount(BaseUtils.getInstance().getLocalNumber());
         messageSMS.setLocalMsgID(UUID.randomUUID().toString());
         messageSMS.setRemoteAccount(num);
         messageSMS.setStartTime(System.currentTimeMillis());

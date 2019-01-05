@@ -61,4 +61,15 @@ public class ServerInfo {
     public void setT(int t) {
         this.t = t;
     }
+
+    @Override
+    public String toString() {
+        return "ServerInfo{" +
+                "m='" + m + '\'' +
+                ", t=" + t +
+                ", r='" + r + '\'' +
+                ", b='" + b + '\'' +
+                ", u='" + u + '\'' +
+                '}';
+    }
 }

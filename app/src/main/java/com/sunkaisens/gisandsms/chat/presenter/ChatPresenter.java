@@ -9,11 +9,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.chat.ChatActivity;
 import com.sunkaisens.gisandsms.chat.ChatAdapter;
 import com.sunkaisens.gisandsms.chat.contract.ChatContract;
 import com.sunkaisens.gisandsms.chat.contract.ChatContract.Presenter;
+import com.sunkaisens.gisandsms.event.GroupSms;
 import com.sunkaisens.gisandsms.event.LastMessageSMS;
 import com.sunkaisens.gisandsms.event.MessageSMS;
 import com.sunkaisens.gisandsms.sms.SMSMethod;
@@ -26,7 +28,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -59,7 +63,7 @@ public class ChatPresenter implements Presenter {
         if (group) {
             messageSMS = DataSupport.where("groupNumber = ?", remoteNumber).find(MessageSMS.class);
         } else {
-            messageSMS = DataSupport.where("localAccount = ? and remoteAccount = ?", BaseUtils.getInstance().getLocalNumber(view), remoteNumber).find(MessageSMS.class);
+            messageSMS = DataSupport.where("localAccount = ? and remoteAccount = ?", BaseUtils.getInstance().getLocalNumber(), remoteNumber).find(MessageSMS.class);
         }
         return messageSMS;
     }
@@ -72,7 +76,7 @@ public class ChatPresenter implements Presenter {
         messageSMS.setMsg(sms);
         messageSMS.setStartTime(System.currentTimeMillis());
         messageSMS.setRemoteAccount(remoteNumber);
-        messageSMS.setLocalAccount(BaseUtils.getInstance().getLocalNumber(view));
+        messageSMS.setLocalAccount(BaseUtils.getInstance().getLocalNumber());
         messageSMS.setIsRead(0);
         messageSMS.setMsgType(GlobalVar.TO_TEXT_MESSAGE);
         messageSMS.setLocalMsgID(UUID.randomUUID().toString());
@@ -90,22 +94,40 @@ public class ChatPresenter implements Presenter {
 
         LastMessageSMS lastMessageSMS = new LastMessageSMS();
         lastMessageSMS.setLastSMS(sms);
-        lastMessageSMS.setLocalNumber(BaseUtils.getInstance().getLocalNumber(view));
+        lastMessageSMS.setLocalNumber(BaseUtils.getInstance().getLocalNumber());
         lastMessageSMS.setRemoteNumber(remoteNumber);
 
-        lastMessageSMS.updateAll("localNumber = ? and remoteNumber = ?", BaseUtils.getInstance().getLocalNumber(view), remoteNumber);
+        lastMessageSMS.updateAll("localNumber = ? and remoteNumber = ?", BaseUtils.getInstance().getLocalNumber(), remoteNumber);
 
         List<LastMessageSMS> smsList = DataSupport.where("remotenumber = ?", remoteNumber).find(LastMessageSMS.class);
-        if (smsList!=null&&smsList.size()!=0){
+        if (smsList != null && smsList.size() != 0) {
             //通知刷新
             ListenerHelper.executeOnMessageUpdate(lastMessageSMS);
-        }else{
+        } else {
             lastMessageSMS.save();
             ListenerHelper.executeOnReceiveNewMessageSms(lastMessageSMS);
         }
+        if (group) {
+            Map<String, Object> map = new HashMap<>(5);
+            GroupSms groupSms = new GroupSms();
+            groupSms.setN(remoteNumber);
+            groupSms.setC(sms);
+            map.put("b", groupSms);
+            map.put("t", GlobalVar.SEND_MSG_TYPE.NORMAL_MSG);
+            map.put("u", BaseUtils.getInstance().getLocalNumber());
+            map.put("m", "");
+            map.put("r", "");
 
-        //发送短信
-        SMSMethod.getInstance(view).SendMessage(remoteNumber, sms);
+            String jsonGroupSms = JSON.toJSONString(map);
+            Log.d("sjy", "send group sms content is:" + jsonGroupSms);
+
+            SMSMethod.getInstance(view).SendMessage(GlobalVar.SMS_CENTER_NUMBER, jsonGroupSms);
+
+        } else {
+            //发送短信
+
+            SMSMethod.getInstance(view).SendMessage(remoteNumber, sms);
+        }
     }
 
     @Override
@@ -142,9 +164,20 @@ public class ChatPresenter implements Presenter {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReceiveSms(MessageSMS sms) {
         Log.d("sjy", "receive sms :" + sms.toString());
-        if (adapter != null && sms.getRemoteAccount().equals(remoteNumber)) {
-            adapter.insert(sms);
+        Log.d("sjy", "is group sms :" + group);
+        Log.d("sjy", "remote number  is :" + remoteNumber);
+        Log.d("sjy", "group number is :" + sms.getGroupNumber());
+
+        if (group) {
+            if (adapter != null && sms.getGroupNumber().equals(remoteNumber)) {
+                adapter.insert(sms);
+            }
+        } else {
+            if (adapter != null && sms.getRemoteAccount().equals(remoteNumber)) {
+                adapter.insert(sms);
+            }
         }
+
     }
 
 

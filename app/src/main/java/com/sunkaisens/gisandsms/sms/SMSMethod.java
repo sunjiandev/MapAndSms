@@ -31,7 +31,7 @@ public class SMSMethod {
 
     private SMSMethod(Context context){
         mContext=context;
-        registerReceiver();
+//        registerReceiver();
     }
 
     public static  SMSMethod getInstance(Context context){
@@ -88,7 +88,8 @@ public class SMSMethod {
             for (String text:divideContents) {
                  /* 发送SMS短信，注意倒数的两个PendingIntent参数 */
                 Log.d("sjy","send sms body :"+strMessage);
-                smsManager.sendTextMessage(strDestAddress, null, text, mSendPI, mDeliverPI);
+                text = text.replace("{", "(").replace("}", ")");
+                smsManager.sendTextMessage(strDestAddress, null, text, null, null);
             }
 
         }catch(Exception e) {

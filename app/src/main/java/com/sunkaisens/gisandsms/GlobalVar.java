@@ -119,7 +119,7 @@ public class GlobalVar {
     /**
      * 接口地址
      */
-    public static final String REQUEST_API = "/api/user_coordinate";
+    public static final String REQUEST_API = "/api/user-coordinate";
 
     /**
      * 获取群组寄群成员
@@ -137,7 +137,7 @@ public class GlobalVar {
      * 短信中心的号码
      */
 
-    public static final String SMS_CENTER_NUMBER = "15320011990";
+    public static final String SMS_CENTER_NUMBER = "19952000001";
 
 
     /**
@@ -182,6 +182,7 @@ public class GlobalVar {
 
     /**
      * 获取组号
+     *
      * @return 组号
      */
     public String getGroupNo() {
@@ -190,11 +191,13 @@ public class GlobalVar {
 
     /**
      * 设置组号
+     *
      * @param groupNo 组号
      */
     public void setGroupNo(String groupNo) {
         this.groupNo = groupNo;
     }
+
 
     public static class SEND_MSG_TYPE {
 
@@ -212,9 +215,14 @@ public class GlobalVar {
         public static final int GROUP_MSG = 0;
 
         /**
-         * gis群组消息
+         * 单个实时位置
          */
         public static final int GIS_GROUP_MSG = 3;
+
+        /**
+         * 获取自己的号码
+         */
+        public static final int REQUEST_LOCAL_NUMBER = 4;
 
     }
 
@@ -237,6 +245,4 @@ public class GlobalVar {
         contactLists.clear();
         contactLists.addAll(contacts);
     }
-
-
 }

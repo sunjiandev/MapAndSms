@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -21,6 +22,7 @@ import android.view.WindowManager;
 
 import com.sunkaisens.gisandsms.MyApp;
 
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.Key;
 import java.security.MessageDigest;
@@ -50,6 +52,7 @@ public class BaseUtils {
     private final AudioManager audioManager;
     private KeyguardManager.KeyguardLock kl;
     private PowerManager.WakeLock wl;
+    private String localNumber;
 
     private BaseUtils() {
 
@@ -211,23 +214,85 @@ public class BaseUtils {
         return (int) (px / scale + 0.5f);
     }
 
-    public String getLocalNumber(Context context) {
-        TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+    public String getLocalNumber() {
+//        TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+//        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//            return "";
+//        } else {
+//            String line1Number = manager.getLine1Number();
+//            Log.d("sjy", "get my number :" + line1Number);
+//
+//            int simCountryIso = manager.getSimState();
+//            Log.d("sjy", "get my simCountryIso :" + simCountryIso);
+//            manager.getSimState();
+//
+//            if (line1Number == null) {
+//                line1Number = "";
+//            }
+//            return line1Number;
+//        }
+        return localNumber;
+
+    }
+
+    /**
+     * 获取手机的 device id
+     *
+     * @return
+     */
+    public String getDeviceId() {
+        TelephonyManager manager = (TelephonyManager) MyApp.getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(MyApp.getContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
             return "";
-        } else {
-            String line1Number = manager.getLine1Number();
-            Log.d("sjy", "get my number :" + line1Number);
-
-            int simCountryIso = manager.getSimState();
-            Log.d("sjy", "get my simCountryIso :" + simCountryIso);
-            manager.getSimState();
-
-            if (line1Number == null) {
-                line1Number = "";
-            }
-            return line1Number;
         }
+        String deviceId = manager.getDeviceId();
+        Log.d("sjy", "get device id :" + deviceId);
 
+        String deviceSoftwareVersion = manager.getDeviceSoftwareVersion();
+
+        Log.d("sjy", "get soft version :" + deviceSoftwareVersion);
+
+        return deviceId;
+    }
+
+    /**
+     * 获取手机型号
+     */
+    public String getDeviceBuild() {
+
+        String device = Build.DEVICE;
+        Log.d("sjy", "get device build :" + device);
+        return device;
+
+    }
+
+    public  String getBaseband_Ver() {
+        String Version = "";
+        try {
+            Class cl = Class.forName("android.os.SystemProperties");
+            Object invoker = cl.newInstance();
+            Method m = cl.getMethod("get", new Class[]{String.class, String.class});
+            Object result = m.invoke(invoker, new Object[]{"gsm.version.baseband", "no message"});
+            Version = (String) result;
+        } catch (Exception e) {
+        }
+        Log.d("sjy","get baseband version :"+Version);
+        return Version;
+    }
+
+    /**
+     * 设置自己的号码
+     * @param localNumber 号码
+     */
+    public void setLocalNumber(String localNumber) {
+
+        this.localNumber = localNumber;
     }
 }

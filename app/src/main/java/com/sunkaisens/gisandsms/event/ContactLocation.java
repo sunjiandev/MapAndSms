@@ -25,7 +25,7 @@ public class ContactLocation {
      * 纬度 小
      */
     private String lat;
-    private String mTime;
+
 
     public String getU() {
         return u;
@@ -51,11 +51,4 @@ public class ContactLocation {
         this.lat = lat;
     }
 
-    public String getMTime() {
-        return mTime;
-    }
-
-    public void setMTime(String mTime) {
-        this.mTime = mTime;
-    }
 }
