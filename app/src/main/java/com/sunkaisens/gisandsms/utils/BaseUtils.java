@@ -52,7 +52,7 @@ public class BaseUtils {
     private final AudioManager audioManager;
     private KeyguardManager.KeyguardLock kl;
     private PowerManager.WakeLock wl;
-    private String localNumber;
+    private String localNumber = "";
 
     private BaseUtils() {
 
