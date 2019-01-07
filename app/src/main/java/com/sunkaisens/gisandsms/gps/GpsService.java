@@ -30,6 +30,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author sjy
@@ -191,16 +193,23 @@ public class GpsService extends Service implements Runnable {
                     //经度
                     oldLongitude = location.getLongitude();
 
-                    ServerInfo info = new ServerInfo();
-                    info.setU(BaseUtils.getInstance().getLocalNumber());
-                    String strLo = JSON.toJSONString(new SMSLocation(location.getLatitude(), location.getLongitude(), BaseUtils.getInstance().getLocalNumber()));
-                    info.setB(strLo);
-                    info.setM("POST");
-                    info.setR(GlobalVar.REQUEST_API);
-                    info.setT(GlobalVar.SEND_MSG_TYPE.GIS_MSG);
-                    String strJson = JSON.toJSONString(info);
-                    Log.d("sjy", "json str :" + strJson);
-                    SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);
+
+                    Map<String, Object> locations = new HashMap<>(5);
+                    SMSLocation smsLocation = new SMSLocation();
+                    smsLocation.setLat(location.getLatitude());
+                    smsLocation.setLon(location.getLongitude());
+                    smsLocation.setU(BaseUtils.getInstance().getLocalNumber());
+                    locations.put("m", "POST");
+                    locations.put("b", smsLocation);
+                    locations.put("r", GlobalVar.REQUEST_API);
+                    locations.put("t", GlobalVar.SEND_MSG_TYPE.GIS_MSG);
+                    locations.put("u", BaseUtils.getInstance().getLocalNumber());
+
+                    String locationsJson = JSON.toJSONString(locations);
+
+                    Log.d("sjy", "post location info:" + locationsJson);
+
+                    SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, locationsJson);
 
                     //显示自己的位置
                     ContactLocation contactLocation = new ContactLocation();
@@ -218,14 +227,22 @@ public class GpsService extends Service implements Runnable {
                     oldLatitude = location.getLatitude();
                     //经度
                     oldLongitude = location.getLongitude();
-                    ServerInfo gpsInfo = new ServerInfo();
-                    gpsInfo.setU(BaseUtils.getInstance().getLocalNumber());
-                    String gpsBody = JSON.toJSONString(new SMSLocation(location.getLatitude(), location.getLongitude(), BaseUtils.getInstance().getLocalNumber()));
-                    gpsInfo.setB(gpsBody);
-                    gpsInfo.setR(GlobalVar.REQUEST_API);
-                    String gpsJson = JSON.toJSONString(gpsInfo);
-                    Log.d("sjy", "json str :" + gpsJson);
-                    SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, gpsJson);
+                    Map<String, Object> locations = new HashMap<>(5);
+                    SMSLocation smsLocation = new SMSLocation();
+                    smsLocation.setLat(location.getLatitude());
+                    smsLocation.setLon(location.getLongitude());
+                    smsLocation.setU(BaseUtils.getInstance().getLocalNumber());
+                    locations.put("m", "POST");
+                    locations.put("b", smsLocation);
+                    locations.put("r", GlobalVar.REQUEST_API);
+                    locations.put("t", GlobalVar.SEND_MSG_TYPE.GIS_MSG);
+                    locations.put("u", BaseUtils.getInstance().getLocalNumber());
+
+                    String locationsJson = JSON.toJSONString(locations);
+
+                    Log.d("sjy", "post location info:" + locationsJson);
+
+                    SMSMethod.getInstance(this).SendMessage(GlobalVar.SMS_CENTER_NUMBER, locationsJson);
 
                     //显示自己的位置
                     ContactLocation contactLocation = new ContactLocation();

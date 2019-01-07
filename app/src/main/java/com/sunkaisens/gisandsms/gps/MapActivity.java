@@ -38,9 +38,9 @@ import com.amap.api.maps.offlinemap.OfflineMapCity;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.MainActivity;
-import com.sunkaisens.gisandsms.MyApp;
 import com.sunkaisens.gisandsms.R;
 import com.sunkaisens.gisandsms.RuntimeRationale;
+import com.sunkaisens.gisandsms.chat.ChatActivity;
 import com.sunkaisens.gisandsms.event.ContactLocation;
 import com.sunkaisens.gisandsms.event.MessageEvent;
 import com.sunkaisens.gisandsms.event.ServerInfo;
@@ -49,6 +49,7 @@ import com.sunkaisens.gisandsms.sms.SMSMethod;
 import com.sunkaisens.gisandsms.utils.BaseUtils;
 import com.sunkaisens.gisandsms.utils.OffLineMapUtils;
 import com.sunkaisens.gisandsms.utils.SpUtil;
+import com.sunkaisens.gisandsms.utils.ToastUtils;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
@@ -160,7 +161,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         String deviceId = BaseUtils.getInstance().getDeviceId();
         if (!TextUtils.isEmpty(deviceId)) {
             if (!deviceId.startsWith("860000")) {
-//                System.exit(0);
+                System.exit(0);
             }
         }
     }
@@ -214,7 +215,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
 
         new AlertDialog.Builder(context)
                 .setCancelable(false)
-                .setTitle("??")
+                .setTitle("提示")
                 .setMessage(message)
                 .setPositiveButton(R.string.setting, new DialogInterface.OnClickListener() {
                     @Override
@@ -240,7 +241,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
                 .onComeback(new Setting.Action() {
                     @Override
                     public void onAction() {
-                        Toast.makeText(MapActivity.this, "????", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MapActivity.this, "前往设置打开权限", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .start();
@@ -318,12 +319,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         switch (view.getId()) {
             //查看的未读消息
             case R.id.message:
-//                //进入系统短信列表界面
-//                Intent intent = new Intent(Intent.ACTION_MAIN);
-//                intent.addCategory(Intent.CATEGORY_DEFAULT);
-//                intent.setData(Uri.parse("smsto:" + "115501129866"));
-//                intent.setType("vnd.android-dir/mms-sms");
-//                startActivity(intent);
                 Intent chatIntent = new Intent(this, MainActivity.class);
                 chatIntent.putExtra(GlobalVar.INTENT_DATA, 0);
                 startActivity(chatIntent);
@@ -473,7 +468,12 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
             public boolean onMarkerClick(Marker marker) {
                 String number = marker.getSnippet();
                 //显示业务的操作方式
-                showServerType(number);
+                if (TextUtils.isEmpty(number)) {
+                    ToastUtils.showToast(MapActivity.this, "未获取到号码");
+                } else {
+
+                    showServerType(number);
+                }
                 return false;
             }
         });
@@ -488,10 +488,11 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
                 switch (which) {
                     //发送短信
                     case 0:
-                        Intent sendIntent = new Intent(Intent.ACTION_SENDTO);
-                        sendIntent.setData(Uri.parse("smsto:" + number));
-                        sendIntent.putExtra("sms_body", "");
-                        MapActivity.this.startActivity(sendIntent);
+                        Intent smsIntent = new Intent(MapActivity.this, ChatActivity.class);
+                        smsIntent.putExtra(GlobalVar.INTENT_DATA, number);
+                        smsIntent.putExtra(GlobalVar.INTENT_GROUP, false);
+                        MapActivity.this.startActivity(smsIntent);
+
                         break;
                     //拨打电话
                     case 1:

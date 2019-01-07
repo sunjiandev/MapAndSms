@@ -35,9 +35,4 @@ public class SMSLocation {
         this.lon = lon;
     }
 
-    public SMSLocation(double lat, double lon,String u) {
-        this.lat = lat;
-        this.lon = lon;
-        this.u = u;
-    }
 }

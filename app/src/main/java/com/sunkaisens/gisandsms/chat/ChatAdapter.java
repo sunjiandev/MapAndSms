@@ -50,7 +50,6 @@ public class ChatAdapter extends BaseRecyclerAdapter<MessageSMS> {
                 holder.setText(R.id.send_msg_text, item.getMsg());
                 break;
             case GlobalVar.IN_TEXT_MESSAGE:
-
                 String sql = "UPDATE messagesms SET isread = 0 WHERE localmsgid = '" + item.getLocalMsgID() + "'";
                 Connector.getDatabase().execSQL(sql);
 
