@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class GlobalVar {
 
+
     private static GlobalVar globalVar;
 
     private GlobalVar() {
@@ -139,7 +140,10 @@ public class GlobalVar {
 
     public static final String SMS_CENTER_NUMBER = "19952000001";
 
-
+    /**
+     * 标记是不是第一次打开
+     */
+    public static final String FIRST_LOGIN = "is_first_login";
     /**
      * 保存最后一条聊天记录的集合
      */
@@ -242,7 +246,6 @@ public class GlobalVar {
      * @param contacts 用户数据集合
      */
     public void setContactList(List<String> contacts) {
-        contactLists.clear();
         contactLists.addAll(contacts);
     }
 }

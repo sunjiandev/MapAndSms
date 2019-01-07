@@ -69,6 +69,11 @@ public class MessageSMS extends DataSupport implements Parcelable {
      */
     private String groupNumber;
 
+    /**
+     * 是否是群组消息
+     */
+    private boolean isGroup;
+
     public String getRemoteAccount() {
         return remoteAccount;
     }
@@ -173,6 +178,14 @@ public class MessageSMS extends DataSupport implements Parcelable {
         this.groupNumber = groupNumber;
     }
 
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(boolean group) {
+        isGroup = group;
+    }
+
     @Override
     public String toString() {
         return "MessageSMS{" +
@@ -189,6 +202,7 @@ public class MessageSMS extends DataSupport implements Parcelable {
                 ", fileProgress=" + fileProgress +
                 ", localMsgID='" + localMsgID + '\'' +
                 ", groupNumber='" + groupNumber + '\'' +
+                ", isGroup=" + isGroup +
                 '}';
     }
 
@@ -212,6 +226,7 @@ public class MessageSMS extends DataSupport implements Parcelable {
         dest.writeInt(this.fileProgress);
         dest.writeString(this.localMsgID);
         dest.writeString(this.groupNumber);
+        dest.writeByte(this.isGroup ? (byte) 1 : (byte) 0);
     }
 
     public MessageSMS() {
@@ -231,6 +246,7 @@ public class MessageSMS extends DataSupport implements Parcelable {
         this.fileProgress = in.readInt();
         this.localMsgID = in.readString();
         this.groupNumber = in.readString();
+        this.isGroup = in.readByte() != 0;
     }
 
     public static final Creator<MessageSMS> CREATOR = new Creator<MessageSMS>() {

@@ -1,6 +1,7 @@
 package com.sunkaisens.gisandsms.chat;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,11 +51,18 @@ public class ChatAdapter extends BaseRecyclerAdapter<MessageSMS> {
                 break;
             case GlobalVar.IN_TEXT_MESSAGE:
 
-                String sql = "UPDATE messagesms SET isread = 0 WHERE localaccount = '" + item.getLocalAccount() + "' and remoteaccount = '" + item.getRemoteAccount() + "'";
+                String sql = "UPDATE messagesms SET isread = 0 WHERE localmsgid = '" + item.getLocalMsgID() + "'";
                 Connector.getDatabase().execSQL(sql);
 
                 holder.setText(R.id.receive_msg_text_time, BaseUtils.getInstance().formatLongTime(item.getStartTime()));
                 holder.setText(R.id.receive_msg_text, item.getMsg());
+                if (TextUtils.isEmpty(item.getGroupNumber())) {
+                    holder.getView(R.id.remote_number).setVisibility(View.GONE);
+                } else {
+                    holder.getView(R.id.remote_number).setVisibility(View.VISIBLE);
+                    holder.setText(R.id.remote_number, item.getRemoteAccount());
+                }
+
                 Log.d("sjy", "update sms is :" + item.toString());
                 Log.d("sjy", "update database sms is read");
 

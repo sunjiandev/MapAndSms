@@ -19,9 +19,10 @@ import android.widget.RelativeLayout;
 import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.R;
 import com.sunkaisens.gisandsms.base.BaseFragment;
-import com.sunkaisens.gisandsms.base.BaseRecyclerAdapter;
 import com.sunkaisens.gisandsms.chat.ChatActivity;
 import com.sunkaisens.gisandsms.utils.ToastUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class ContactFragment extends BaseFragment {
 
     private String number;
     private List<String> contactLists;
+    private ContactAdapter adapter;
 
 
     @Override
@@ -53,7 +55,7 @@ public class ContactFragment extends BaseFragment {
 
         //有联系人数据
         if (contactLists != null && contactLists.size() != 0) {
-            ContactAdapter adapter = new ContactAdapter(getContext(), contactLists);
+            adapter = new ContactAdapter(getContext(), contactLists);
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -69,7 +71,7 @@ public class ContactFragment extends BaseFragment {
                         go(MyGroupActivity.class);
 
                     } else {
-                        number = contactLists.get(position-1);
+                        number = contactLists.get(position - 1);
                         showSelectDialog(number);
                     }
                 }
@@ -138,7 +140,7 @@ public class ContactFragment extends BaseFragment {
 
         contactLists = GlobalVar.getGlobalVar().getContactLists();
 
-        Log.d("sjy","contact list size:"+contactLists.size());
+        Log.d("sjy", "contact list size:" + contactLists.size());
 //        for (int i = 0; i < 10; i++) {
 //            contactLists.add("1550112986" + i);
 //        }

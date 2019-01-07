@@ -130,6 +130,12 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
                                 saveSms(strAddress, groupSmsBody, true);
                                 saveLastSMS(strAddress, groupSmsBody, true);
 
+                                //收到数据之后,先本地存,然后发送通知
+                                MessageEvent messageEvent = new MessageEvent();
+                                messageEvent.setContent(strbody);
+                                messageEvent.setNumber(strAddress);
+                                EventBus.getDefault().post(messageEvent);
+
                                 break;
                             //获取群组组号还有组成员
                             case GlobalVar.SEND_MSG_TYPE.GROUP_MSG:
@@ -139,23 +145,6 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
                                 GlobalVar.getGlobalVar().setContactList(groupInfo.getUri());
                                 Log.d("sjy", "set group no :" + groupInfo.getGroupNo());
                                 GlobalVar.getGlobalVar().setGroupNo(groupInfo.getGroupNo());
-
-
-                                //获取完之后拉所有人的实时位置
-                                ServerInfo serverInfo = new ServerInfo();
-                                serverInfo.setT(GlobalVar.SEND_MSG_TYPE.GIS_MSG);
-                                serverInfo.setM("GET");
-                                serverInfo.setR(GlobalVar.REQUEST_API);
-                                serverInfo.setU(BaseUtils.getInstance().getLocalNumber());
-                                serverInfo.setB("");
-                                String jsonString = JSON.toJSONString(serverInfo);
-
-                                Log.d("sjy", "convert gis str :" + jsonString);
-
-
-                                SMSMethod.getInstance(MyApp.getContext()).SendMessage(GlobalVar.SMS_CENTER_NUMBER, jsonString);
-
-
                                 //获取自己的号码
                                 break;
                             case GlobalVar.SEND_MSG_TYPE.REQUEST_LOCAL_NUMBER:
@@ -178,6 +167,21 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
                                 Log.d("sjy", "convert contact str :" + strJson);
                                 SMSMethod.getInstance(MyApp.getContext()).SendMessage(GlobalVar.SMS_CENTER_NUMBER, strJson);
 
+
+                                //获取完之后拉所有人的实时位置
+                                ServerInfo serverInfo = new ServerInfo();
+                                serverInfo.setT(GlobalVar.SEND_MSG_TYPE.GIS_MSG);
+                                serverInfo.setM("GET");
+                                serverInfo.setR(GlobalVar.REQUEST_API);
+                                serverInfo.setU(BaseUtils.getInstance().getLocalNumber());
+                                serverInfo.setB("");
+                                String jsonString = JSON.toJSONString(serverInfo);
+
+                                Log.d("sjy", "convert gis str :" + jsonString);
+
+                                SMSMethod.getInstance(MyApp.getContext()).SendMessage(GlobalVar.SMS_CENTER_NUMBER, jsonString);
+
+
                                 break;
                             default:
                                 break;
@@ -185,7 +189,11 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("sjy", "parse has exception ");
-                        saveLastSMS(strAddress, strbody, false);
+                        if (strAddress.equals(GlobalVar.SMS_CENTER_NUMBER)) {
+                            Log.d("sjy", "sms is err ,don`t save");
+                        } else {
+                            saveLastSMS(strAddress, strbody, false);
+                        }
                     }
                 }
             }
@@ -217,6 +225,7 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
         }
         Log.d("sjy", "get contact sms list :" + list.size());
         lastMessageSMS.setLastSMS(strbody);
+        lastMessageSMS.setGroup(isGroup);
         lastMessageSMS.setRemoteNumber(strAddress);
         //更新
         if (list != null && list.size() != 0) {
@@ -255,6 +264,7 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
      */
     private void saveSms(String num, String con, boolean isgroup) {
         MessageSMS messageSMS = new MessageSMS();
+        messageSMS.setGroup(isgroup);
         if (isgroup) {
             JSONObject jsonObject = JSON.parseObject(con);
             //获取组号
@@ -265,6 +275,10 @@ public class SmsDatabaseChaneObserver extends ContentObserver {
             String content = jsonObject.getString("b");
 
             Log.d("sjy", "get group sms body :" + con);
+
+            Log.d("sjy", "get group number from json result :" + groupNo);
+            Log.d("sjy", "get remote number from json result :" + remoteNumber);
+            Log.d("sjy", "get body number from json result :" + content);
 
             messageSMS.setGroupNumber(groupNo);
             messageSMS.setRemoteAccount(remoteNumber);

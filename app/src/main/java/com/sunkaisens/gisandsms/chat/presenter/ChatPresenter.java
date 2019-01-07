@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
@@ -60,10 +61,14 @@ public class ChatPresenter implements Presenter {
 
     @Override
     public List<MessageSMS> getMessageSmsList() {
+        Log.d("sjy", "get message sms list is group :" + group);
         if (group) {
+
+            Log.d("sjy", "get message sms list by group number :" + remoteNumber);
             messageSMS = DataSupport.where("groupNumber = ?", remoteNumber).find(MessageSMS.class);
         } else {
-            messageSMS = DataSupport.where("localAccount = ? and remoteAccount = ?", BaseUtils.getInstance().getLocalNumber(), remoteNumber).find(MessageSMS.class);
+            Log.d("sjy", "get message sms list by contact number  and remote number :" + remoteNumber);
+            messageSMS = DataSupport.where("localAccount = ? and remoteAccount = ? and isgroup = ?", BaseUtils.getInstance().getLocalNumber(), remoteNumber, "0").find(MessageSMS.class);
         }
         return messageSMS;
     }
@@ -80,6 +85,7 @@ public class ChatPresenter implements Presenter {
         messageSMS.setIsRead(0);
         messageSMS.setMsgType(GlobalVar.TO_TEXT_MESSAGE);
         messageSMS.setLocalMsgID(UUID.randomUUID().toString());
+        messageSMS.setGroup(group);
         if (group) {
             //设置组号
             messageSMS.setGroupNumber(remoteNumber);
@@ -96,6 +102,7 @@ public class ChatPresenter implements Presenter {
         lastMessageSMS.setLastSMS(sms);
         lastMessageSMS.setLocalNumber(BaseUtils.getInstance().getLocalNumber());
         lastMessageSMS.setRemoteNumber(remoteNumber);
+        lastMessageSMS.setGroup(group);
 
         lastMessageSMS.updateAll("localNumber = ? and remoteNumber = ?", BaseUtils.getInstance().getLocalNumber(), remoteNumber);
 
@@ -173,7 +180,7 @@ public class ChatPresenter implements Presenter {
                 adapter.insert(sms);
             }
         } else {
-            if (adapter != null && sms.getRemoteAccount().equals(remoteNumber)) {
+            if (adapter != null && sms.getRemoteAccount().equals(remoteNumber) && TextUtils.isEmpty(sms.getGroupNumber())) {
                 adapter.insert(sms);
             }
         }

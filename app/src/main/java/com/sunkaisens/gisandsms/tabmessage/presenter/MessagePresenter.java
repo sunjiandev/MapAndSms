@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.sunkaisens.gisandsms.GlobalVar;
@@ -70,11 +71,11 @@ public class MessagePresenter implements MessageContract.Presenter, ListenerHelp
                 LastMessageSMS lastMessageSMS = MessagePresenter.this.lastMessageSMS.get(position);
                 String number = lastMessageSMS.getRemoteNumber();
                 Intent intent = new Intent(context, ChatActivity.class);
-                intent.putExtra(GlobalVar.INTENT_DATA,number);
-                if (number.length()<8){
-                    intent.putExtra(GlobalVar.INTENT_GROUP,true);
-                }
-               context.startActivity(intent);
+                intent.putExtra(GlobalVar.INTENT_DATA, number);
+                intent.putExtra(GlobalVar.INTENT_GROUP, lastMessageSMS.isGroup());
+                Log.d("sjy", "is group sms :" + lastMessageSMS.isGroup());
+
+                context.startActivity(intent);
 
             }
         });

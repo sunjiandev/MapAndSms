@@ -17,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ import com.amap.api.maps.offlinemap.OfflineMapCity;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.sunkaisens.gisandsms.GlobalVar;
 import com.sunkaisens.gisandsms.MainActivity;
+import com.sunkaisens.gisandsms.MyApp;
 import com.sunkaisens.gisandsms.R;
 import com.sunkaisens.gisandsms.RuntimeRationale;
 import com.sunkaisens.gisandsms.event.ContactLocation;
@@ -82,6 +84,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
 
     private String[] permissions = {Permission.ACCESS_FINE_LOCATION, Permission.RECEIVE_SMS,
             Permission.READ_EXTERNAL_STORAGE, Permission.READ_PHONE_STATE, Permission.CALL_PHONE, Permission.SEND_SMS};
+    private boolean isFirstLogin;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,6 +99,10 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
             aMap = this.map.getMap();
         }
 
+        isFirstLogin = SpUtil.getSpUtil(this).getBoolean(GlobalVar.FIRST_LOGIN, false);
+        if (!isFirstLogin) {
+            SpUtil.getSpUtil(this).putBoolean(GlobalVar.FIRST_LOGIN, true);
+        }
 
         /***********************设置自己的定位点显示***************************/
         aMap.setMyLocationEnabled(true);
@@ -153,7 +160,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         String deviceId = BaseUtils.getInstance().getDeviceId();
         if (!TextUtils.isEmpty(deviceId)) {
             if (!deviceId.startsWith("860000")) {
-                System.exit(0);
+//                System.exit(0);
             }
         }
     }
@@ -184,6 +191,18 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
                     }
                 })
                 .start();
+        if (!isFirstLogin) {
+            AlertDialog dialog = new AlertDialog.Builder(this).setTitle("提示").setMessage("权限初始化完成,重新打开加载地图数据").setNegativeButton("退出", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    System.exit(0);
+
+                }
+            }).create();
+            dialog.show();
+            dialog.setCanceledOnTouchOutside(false);
+        }
     }
 
     /**
@@ -503,14 +522,14 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         startActivity(intent);
     }
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            moveTaskToBack(true);
-//            return true;
-//        } else if (keyCode == KeyEvent.KEYCODE_HOME) {
-//        }
-//        return super.onKeyDown(keyCode, event);
-//    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

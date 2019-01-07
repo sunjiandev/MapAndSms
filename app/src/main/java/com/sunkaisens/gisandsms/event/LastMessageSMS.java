@@ -29,6 +29,19 @@ public class LastMessageSMS extends DataSupport implements Parcelable {
      */
     private long data;
 
+    /**
+     * 是否是群组消息
+     */
+    private boolean isGroup;
+
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(boolean group) {
+        isGroup = group;
+    }
+
     public String getLocalNumber() {
         return localNumber;
     }
@@ -68,6 +81,7 @@ public class LastMessageSMS extends DataSupport implements Parcelable {
                 ", remoteNumber='" + remoteNumber + '\'' +
                 ", lastSMS='" + lastSMS + '\'' +
                 ", data=" + data +
+                ", isGroup=" + isGroup +
                 '}';
     }
 
@@ -82,6 +96,7 @@ public class LastMessageSMS extends DataSupport implements Parcelable {
         dest.writeString(this.remoteNumber);
         dest.writeString(this.lastSMS);
         dest.writeLong(this.data);
+        dest.writeByte(this.isGroup ? (byte) 1 : (byte) 0);
     }
 
     public LastMessageSMS() {
@@ -92,9 +107,10 @@ public class LastMessageSMS extends DataSupport implements Parcelable {
         this.remoteNumber = in.readString();
         this.lastSMS = in.readString();
         this.data = in.readLong();
+        this.isGroup = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<LastMessageSMS> CREATOR = new Parcelable.Creator<LastMessageSMS>() {
+    public static final Creator<LastMessageSMS> CREATOR = new Creator<LastMessageSMS>() {
         @Override
         public LastMessageSMS createFromParcel(Parcel source) {
             return new LastMessageSMS(source);

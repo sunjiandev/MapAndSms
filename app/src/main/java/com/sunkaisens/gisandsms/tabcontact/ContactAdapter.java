@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sunkaisens.gisandsms.R;
@@ -82,14 +81,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             String number = list.get(position - 1);
             holder.userAccount.setText(number);
         }
-       holder.itemView.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               if (listener!=null){
-                   listener.onItemClick(v,holder.getAdapterPosition());
-               }
-           }
-       });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onItemClick(v, holder.getAdapterPosition());
+                }
+            }
+        });
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -102,11 +101,33 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         }
     }
 
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
         void onItemClick(View view, int position);
     }
-    public void setOnItemClickListener(OnItemClickListener listener){
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
 
         this.listener = listener;
+    }
+
+    /**
+     * 插入数据
+     *
+     * @param contact  数据
+     * @param position 插入位置
+     */
+    public void insert(String contact, int position) {
+        list.add(position, contact);
+        notifyItemChanged(position);
+    }
+
+    /**
+     * 出入数据
+     *
+     * @param contacts 数据
+     */
+    public void insert(List<String> contacts) {
+        list.addAll(contacts);
+        notifyDataSetChanged();
     }
 }

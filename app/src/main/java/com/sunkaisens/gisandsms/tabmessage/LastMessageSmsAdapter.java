@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class LastMessageSmsAdapter extends BaseRecyclerAdapter<LastMessageSMS> {
 
+    private List<MessageSMS> sms;
+
     public LastMessageSmsAdapter(Context context, List<LastMessageSMS> list, int itemLayoutId) {
         super(context, list, itemLayoutId);
     }
@@ -28,7 +30,12 @@ public class LastMessageSmsAdapter extends BaseRecyclerAdapter<LastMessageSMS> {
     @Override
     public void convert(BaseRecyclerHolder holder, LastMessageSMS item, int position, boolean isScrolling, List payloads) {
 
-        List<MessageSMS> sms = DataSupport.where("localaccount = ? and remoteaccount = ? and isread = ?", item.getLocalNumber(), item.getRemoteNumber(), "1").find(MessageSMS.class);
+        //是群组
+        if (item.getRemoteNumber().length() < 10) {
+            sms = DataSupport.where("groupnumber = ? and isread = ?", item.getRemoteNumber(), "1").find(MessageSMS.class);
+        } else {
+            sms = DataSupport.where("localaccount = ? and remoteaccount = ? and isread = ?", item.getLocalNumber(), item.getRemoteNumber(), "1").find(MessageSMS.class);
+        }
         if (sms != null && sms.size() != 0) {
             holder.getView(R.id.unread_message_tips).setVisibility(View.VISIBLE);
         }

@@ -90,6 +90,8 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
         getMenuInflater().inflate(R.menu.chat_menu, menu);
         if (!isGroup) {
             menu.getItem(1).setVisible(false);
+        }else {
+            menu.getItem(0).setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
     }
