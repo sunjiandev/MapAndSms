@@ -136,7 +136,6 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
      */
     private void getFirstData() {
 
-
         //获取自己的号码
         ServerInfo localInfo = new ServerInfo();
         localInfo.setT(GlobalVar.SEND_MSG_TYPE.REQUEST_LOCAL_NUMBER);
@@ -161,7 +160,7 @@ public class MapActivity extends AppCompatActivity implements OfflineMapManager.
         String deviceId = BaseUtils.getInstance().getDeviceId();
         if (!TextUtils.isEmpty(deviceId)) {
             if (!deviceId.startsWith("860000")) {
-                System.exit(0);
+//                System.exit(0);
             }
         }
     }

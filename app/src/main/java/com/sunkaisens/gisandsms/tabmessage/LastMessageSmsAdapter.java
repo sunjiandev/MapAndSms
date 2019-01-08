@@ -31,10 +31,10 @@ public class LastMessageSmsAdapter extends BaseRecyclerAdapter<LastMessageSMS> {
     public void convert(BaseRecyclerHolder holder, LastMessageSMS item, int position, boolean isScrolling, List payloads) {
 
         //是群组
-        if (item.getRemoteNumber().length() < 10) {
-            sms = DataSupport.where("groupnumber = ? and isread = ?", item.getRemoteNumber(), "1").find(MessageSMS.class);
+        if (item.isGroup()) {
+            sms = DataSupport.where("localaccount = ? and groupnumber = ? and isread = ?", item.getLocalNumber(), item.getRemoteNumber(), "1").find(MessageSMS.class);
         } else {
-            sms = DataSupport.where("localaccount = ? and remoteaccount = ? and isread = ?", item.getLocalNumber(), item.getRemoteNumber(), "1").find(MessageSMS.class);
+            sms = DataSupport.where("localaccount = ? and remoteaccount = ? and isread = ? and groupnumber = ?", item.getLocalNumber(), item.getRemoteNumber(), "1", "").find(MessageSMS.class);
         }
         if (sms != null && sms.size() != 0) {
             holder.getView(R.id.unread_message_tips).setVisibility(View.VISIBLE);
